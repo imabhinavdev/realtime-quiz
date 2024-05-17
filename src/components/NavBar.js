@@ -82,7 +82,7 @@ const NavBar = () => {
           <div className="flex-1 gap-x-6 items-center justify-end mt-6 space-y-6 md:flex md:space-y-0 md:mt-0">
             <Link
               href="https://imabhinav.dev"
-              className="flex items-center justify-center gap-x-1 py-2 px-4 text-white font-medium bg-gray-800 hover:bg-gray-700 active:bg-gray-900 rounded-full md:inline-flex"
+              className="flex items-center justify-center gap-x-1 py-2 px-4 text-white font-medium bg-blue-700 hover:bg-gray-700 active:bg-gray-900 rounded-full md:inline-flex"
             >
               Contact Me
               <svg

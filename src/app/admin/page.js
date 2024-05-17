@@ -23,13 +23,13 @@ const CardData = [
   {
     title: "Manage Questions",
     desc: "You can manage questions here like adding, deleting, updating new questions.",
-    link: "#",
+    link: "/admin/questions",
     btn: "Click Me",
   },
   {
     title: "Control Quiz",
     desc: "You can control the quiz here like starting, stopping, and resetting the quiz.",
-    link: "#",
+    link: "/admin/quiz",
     btn: "Click Me",
   },
   {
