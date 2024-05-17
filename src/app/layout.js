@@ -15,9 +15,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${pop.className} bg-slate-100`}>
+      <body className={`${pop.className} bg-slate-100 `}>
         <NavBar />
-        {children}
+        <div className="gap-x-14 items-center max-w-screen-xl mx-auto px-4 md:flex md:px-8">
+          {children}
+        </div>
       </body>
     </html>
   );

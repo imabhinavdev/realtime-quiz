@@ -3,8 +3,13 @@ import React from "react";
 
 const HomePage = () => {
   return (
-    <div className="gap-x-14 items-center max-w-screen-xl mx-auto px-4 md:flex md:px-8">
-      <Card />
+    <div className="">
+      <Card
+        title="Take Quiz"
+        desc="This is a quiz app where you can take a quiz and test your knowledge."
+        btn="Start quiz"
+        link="/quiz"
+      />
     </div>
   );
 };
