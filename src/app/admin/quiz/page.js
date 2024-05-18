@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { getDatabase, ref, onValue, set, get, child,update } from "firebase/database";
+import { getDatabase, ref, onValue, set, get, update } from "firebase/database";
 import database from "@/firebase/config";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
@@ -105,10 +105,6 @@ const AdminQuizControlPage = () => {
     if (questions.length > 0) {
       const firstQuestionId = questions[0];
 
-      // Remove all users
-      const usersRef = ref(db, "users");
-      set(usersRef, null);
-
       // Reset current question
       set(ref(db, "quiz/current_question"), firstQuestionId);
 
@@ -132,6 +128,19 @@ const AdminQuizControlPage = () => {
     } else {
       toast.error("No questions available to reset the quiz");
     }
+  };
+
+  const handleRemoveAllUsers = () => {
+    const db = getDatabase();
+    const usersRef = ref(db, "users");
+    set(usersRef, null)
+      .then(() => {
+        toast.success("All users removed successfully");
+      })
+      .catch((error) => {
+        toast.error("Failed to remove users");
+        console.error("Error removing users:", error);
+      });
   };
 
   const handleToggleShowAnswer = (val) => {
@@ -183,6 +192,13 @@ const AdminQuizControlPage = () => {
             }}
           >
             {showAnswer ? "Hide Answers" : "Show Answers"}
+          </button>
+          <button
+            className="bg-red-600 text-white px-4 py-2 rounded-lg"
+            onClick={handleRemoveAllUsers}
+            disabled={quizActive}
+          >
+            Remove All Users
           </button>
         </div>
         <div className="flex gap-4 w-full">

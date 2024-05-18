@@ -175,7 +175,8 @@ const QuizApp = ({ params }) => {
       .then((snapshot) => {
         const userData = snapshot.val();
         const newScore = (userData.score || 0) + 1; // Increment the score by 1
-        update(userScoreRef, { score: newScore }); // Update the score in the database
+        const newTime = new Date().getTime();
+        update(userScoreRef, { score: newScore, lastAnswered: newTime }); // Update the score in the database
       })
       .catch((error) => {
         console.error("Error updating user score:", error);

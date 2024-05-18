@@ -36,6 +36,7 @@ const AddQuestions = () => {
       return;
     }
 
+    let time = new Date().getTime();
     // Construct the questionData object
     let constructedQuestionData = {
       text: questionData.text,
@@ -44,6 +45,7 @@ const AddQuestions = () => {
       optionC: questionData.optionC,
       optionD: questionData.optionD,
       correct: questionData.correct,
+      createdAt: time,
     };
 
     const questionId = questionData.text.split(" ").join("_");

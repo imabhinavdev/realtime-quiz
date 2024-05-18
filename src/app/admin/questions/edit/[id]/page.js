@@ -5,9 +5,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import database from "@/firebase/config";
 import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
-const EditQuestions = ({ params }) => {
-  const questionId = decodeURIComponent(params.id);
+const EditQuestions = () => {
+  const { id } = useParams(); // Assuming you have set up routing to pass `id` as a parameter
+  const questionId = decodeURIComponent(id);
   const [questionData, setQuestionData] = useState({
     text: "",
     correct: "",
@@ -63,34 +65,35 @@ const EditQuestions = ({ params }) => {
     }
   };
 
+  const handleOptionChange = (e) => {
+    const { value } = e.target;
+    setQuestionData({
+      ...questionData,
+      correct: value,
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // Check if question text and correct answer are filled
     if (!questionData.text || !questionData.correct) {
-      toast.error("Please fill in the question text and correct answer.");
+      toast.error(
+        "Please fill in the question text and select the correct option."
+      );
       return;
     }
 
     // Construct the questionData object
     let constructedQuestionData = {
       text: questionData.text,
+      optionA: options.optionA,
+      optionB: options.optionB,
+      optionC: options.optionC,
+      optionD: options.optionD,
       correct: questionData.correct,
+      updatedAt: new Date().getTime(),
     };
-
-    // Add options if provided
-    if (options.optionA) {
-      constructedQuestionData.optionA = options.optionA;
-    }
-    if (options.optionB) {
-      constructedQuestionData.optionB = options.optionB;
-    }
-    if (options.optionC) {
-      constructedQuestionData.optionC = options.optionC;
-    }
-    if (options.optionD) {
-      constructedQuestionData.optionD = options.optionD;
-    }
 
     const db = getDatabase();
     set(ref(db, `quiz/questions/${questionId}`), constructedQuestionData)
@@ -109,11 +112,11 @@ const EditQuestions = ({ params }) => {
   return (
     <>
       <ToastContainer />
-      <div className="flex flex-col items-center p-4">
+      <div className="flex flex-col items-center bg-white w-full rounded-lg p-4">
         <h1 className="text-2xl font-bold mb-4">Edit Question</h1>
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-4 w-full max-w-md"
+          className="flex flex-col gap-4 w-full max-w-lg"
         >
           <div className="flex flex-col gap-2">
             <label htmlFor="text" className="font-medium">
@@ -129,69 +132,87 @@ const EditQuestions = ({ params }) => {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="correct" className="font-medium">
-              Correct Answer
-            </label>
-            <input
-              type="text"
-              name="correct"
-              value={questionData.correct}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              placeholder="Enter the correct answer (e.g., optionA, optionB, etc.)"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="optionA" className="font-medium">
-              Option A
-            </label>
-            <input
-              type="text"
-              name="optionA"
-              value={options.optionA}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              placeholder="Enter option A"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="optionB" className="font-medium">
-              Option B
-            </label>
-            <input
-              type="text"
-              name="optionB"
-              value={options.optionB}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              placeholder="Enter option B"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="optionC" className="font-medium">
-              Option C
-            </label>
-            <input
-              type="text"
-              name="optionC"
-              value={options.optionC}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              placeholder="Enter option C"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="optionD" className="font-medium">
-              Option D
-            </label>
-            <input
-              type="text"
-              name="optionD"
-              value={options.optionD}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              placeholder="Enter option D"
-            />
+            <label className="font-medium">Options</label>
+            <div>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="correct"
+                  value="optionA"
+                  checked={questionData.correct === "optionA"}
+                  onChange={handleOptionChange}
+                />
+                Option A
+              </label>
+              <input
+                type="text"
+                name="optionA"
+                value={options.optionA}
+                onChange={handleChange}
+                className="p-2 border rounded"
+                placeholder="Enter option A"
+              />
+            </div>
+            <div>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="correct"
+                  value="optionB"
+                  checked={questionData.correct === "optionB"}
+                  onChange={handleOptionChange}
+                />
+                Option B
+              </label>
+              <input
+                type="text"
+                name="optionB"
+                value={options.optionB}
+                onChange={handleChange}
+                className="p-2 border rounded"
+                placeholder="Enter option B"
+              />
+            </div>
+            <div>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="correct"
+                  value="optionC"
+                  checked={questionData.correct === "optionC"}
+                  onChange={handleOptionChange}
+                />
+                Option C
+              </label>
+              <input
+                type="text"
+                name="optionC"
+                value={options.optionC}
+                onChange={handleChange}
+                className="p-2 border rounded"
+                placeholder="Enter option C"
+              />
+            </div>
+            <div>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="correct"
+                  value="optionD"
+                  checked={questionData.correct === "optionD"}
+                  onChange={handleOptionChange}
+                />
+                Option D
+              </label>
+              <input
+                type="text"
+                name="optionD"
+                value={options.optionD}
+                onChange={handleChange}
+                className="p-2 border rounded"
+                placeholder="Enter option D"
+              />
+            </div>
           </div>
           <button
             type="submit"
