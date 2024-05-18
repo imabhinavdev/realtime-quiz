@@ -2,7 +2,7 @@ import AdminNavbar from "@/components/AdminNavbar";
 
 export default function AdminLayout({ children }) {
   return (
-    <div className="">
+    <div className="w-full">
       <AdminNavbar />
       {children}
     </div>

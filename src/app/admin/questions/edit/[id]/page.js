@@ -7,7 +7,7 @@ import database from "@/firebase/config";
 import { useRouter } from "next/navigation";
 
 const EditQuestions = ({ params }) => {
-  const questionId = params.id;
+  const questionId = decodeURIComponent(params.id);
   const [questionData, setQuestionData] = useState({
     text: "",
     correct: "",
@@ -21,7 +21,7 @@ const EditQuestions = ({ params }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const db = getDatabase();
+    const db = database;
     const questionRef = ref(db, `/quiz/questions/${questionId}`);
 
     get(questionRef)

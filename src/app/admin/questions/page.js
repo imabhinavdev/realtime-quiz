@@ -1,11 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { getDatabase, ref, get } from "firebase/database";
+import { getDatabase, ref, get, remove } from "firebase/database";
 import database from "@/firebase/config";
 import Link from "next/link";
+import ConfirmationModal from "@/components/ConfirmationModal";
 
 const ControlPage = () => {
   const [questions, setQuestions] = useState({});
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
 
   useEffect(() => {
     const db = database;
@@ -23,6 +25,32 @@ const ControlPage = () => {
         console.error("Error fetching questions:", error);
       });
   }, []);
+
+  const handleDeleteQuestion = (questionId) => {
+    const db = getDatabase();
+    const questionRef = ref(db, `quiz/questions/${questionId}`);
+
+    // Remove the question data from the database
+    remove(questionRef)
+      .then(() => {
+        // Remove the question from the local state
+        const updatedQuestions = { ...questions };
+        delete updatedQuestions[questionId];
+        setQuestions(updatedQuestions);
+        console.log("Question deleted successfully");
+      })
+      .catch((error) => {
+        console.error("Error deleting question:", error);
+      });
+  };
+
+  const handleOpenConfirmationModal = (questionId) => {
+    setSelectedQuestion(questionId);
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setSelectedQuestion(null);
+  };
 
   return (
     <div className="">
@@ -48,28 +76,39 @@ const ControlPage = () => {
       {Object.keys(questions).length > 0 ? (
         <ul className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {Object.entries(questions).map(([id, question]) => (
-            <>
-              <li className="border rounded-lg">
-                <div className="flex items-start justify-between p-6">
-                  <div className="space-y-2">
-                    <h4 className="text-gray-800 font-semibold">
-                      {question.text}
-                    </h4>
-                    <p className="text-sm">{question.correct}</p>
-                  </div>
-                  <Link
-                    href={`/admin/questions/edit/${id}`}
-                    className="text-gray-700 text-sm border rounded-lg px-3 mx-2 py-2 duration-150 hover:bg-gray-100"
-                  >
-                    Edit
-                  </Link>
+            <li key={id} className="border rounded-lg">
+              <div className="flex items-start justify-between p-6">
+                <div className="space-y-2">
+                  <h4 className="text-gray-800 font-semibold">
+                    {question.text}
+                  </h4>
+                  <p className="text-sm">{question.correct}</p>
                 </div>
-              </li>
-            </>
+                <Link
+                  href={`/admin/questions/edit/${id}`}
+                  className="text-gray-700 text-sm border rounded-lg px-3 mx-2 py-2 duration-150 hover:bg-gray-100"
+                >
+                  Edit
+                </Link>
+              </div>
+              <button
+                onClick={() => handleOpenConfirmationModal(id)}
+                className="text-red-500 ml-4 p-2"
+              >
+                Delete
+              </button>
+            </li>
           ))}
         </ul>
       ) : (
         <p>No questions available</p>
+      )}
+      {selectedQuestion && (
+        <ConfirmationModal
+          questionId={selectedQuestion}
+          onDelete={handleDeleteQuestion}
+          onClose={handleCloseConfirmationModal}
+        />
       )}
       <section className="py-16"></section>
     </div>

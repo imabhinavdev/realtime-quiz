@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { getDatabase, ref, onValue, set, get, child } from "firebase/database";
+import { getDatabase, ref, onValue, set, get, child,update } from "firebase/database";
 import database from "@/firebase/config";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
@@ -104,9 +104,30 @@ const AdminQuizControlPage = () => {
     const db = getDatabase();
     if (questions.length > 0) {
       const firstQuestionId = questions[0];
+
+      // Remove all users
+      const usersRef = ref(db, "users");
+      set(usersRef, null);
+
+      // Reset current question
       set(ref(db, "quiz/current_question"), firstQuestionId);
-      setShowAnswer(false); // Reset showAnswer to false
+
+      // Reset showAnswer status
+      setShowAnswer(false);
       handleToggleShowAnswer(false); // Reset showAnswer status in Firebase
+
+      // Reset counts of options selected to 0 for all questions
+      questions.forEach((questionId) => {
+        const optionSelectedCountRef = ref(db, `quiz/questions/${questionId}`);
+        const dataToUpdate = {
+          optionASelectedCount: 0,
+          optionBSelectedCount: 0,
+          optionCSelectedCount: 0,
+          optionDSelectedCount: 0,
+        };
+        update(optionSelectedCountRef, dataToUpdate);
+      });
+
       toast.success("Quiz reset successfully");
     } else {
       toast.error("No questions available to reset the quiz");
