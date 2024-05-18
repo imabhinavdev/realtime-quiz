@@ -14,14 +14,14 @@ const AdminQuizControlPage = () => {
     const db = getDatabase();
 
     // Fetch quiz_active status from Firebase
-    const quizActiveRef = ref(db, "quiz_active");
+    const quizActiveRef = ref(db, "quiz/quiz_active");
     const unsubscribeQuizActive = onValue(quizActiveRef, (snapshot) => {
       const data = snapshot.val();
       setQuizActive(data);
     });
 
     // Fetch current_question from Firebase
-    const currentQuestionRef = ref(db, "current_question");
+    const currentQuestionRef = ref(db, "quiz/current_question");
     const unsubscribeCurrentQuestion = onValue(
       currentQuestionRef,
       (snapshot) => {
@@ -31,7 +31,7 @@ const AdminQuizControlPage = () => {
     );
 
     // Fetch all questions from Firebase
-    const questionsRef = ref(db, "questions");
+    const questionsRef = ref(db, "quiz/questions");
     get(questionsRef)
       .then((snapshot) => {
         if (snapshot.exists()) {
@@ -53,13 +53,13 @@ const AdminQuizControlPage = () => {
 
   const handleStartQuiz = () => {
     const db = getDatabase();
-    set(ref(db, "quiz_active"), true);
+    set(ref(db, "quiz/quiz_active"), true);
     toast.success("Quiz started successfully");
   };
 
   const handleStopQuiz = () => {
     const db = getDatabase();
-    set(ref(db, "quiz_active"), false);
+    set(ref(db, "quiz/quiz_active"), false);
     toast.success("Quiz stopped successfully");
   };
 
@@ -68,7 +68,7 @@ const AdminQuizControlPage = () => {
     if (currentIndex < questions.length - 1) {
       const nextQuestion = questions[currentIndex + 1];
       const db = getDatabase();
-      set(ref(db, "current_question"), nextQuestion);
+      set(ref(db, "quiz/current_question"), nextQuestion);
       toast.success("Next question is set successfully");
     }
   };
@@ -78,7 +78,7 @@ const AdminQuizControlPage = () => {
     if (currentIndex > 0) {
       const previousQuestion = questions[currentIndex - 1];
       const db = getDatabase();
-      set(ref(db, "current_question"), previousQuestion);
+      set(ref(db, "quiz/current_question"), previousQuestion);
       toast.success("Previous question is set successfully");
     }
   };
@@ -87,7 +87,7 @@ const AdminQuizControlPage = () => {
     const db = getDatabase();
     if (questions.length > 0) {
       const firstQuestionId = questions[0];
-      set(ref(db, "current_question"), firstQuestionId);
+      set(ref(db, "quiz/current_question"), firstQuestionId);
       toast.success("Quiz reset successfully");
     } else {
       toast.error("No questions available to reset the quiz");

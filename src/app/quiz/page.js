@@ -12,8 +12,8 @@ const QuizApp = () => {
 
   useEffect(() => {
     const db = database;
-    const quizActiveRef = ref(db, "quiz_active");
-    const currentQuestionRef = ref(db, "current_question");
+    const quizActiveRef = ref(db, "quiz/quiz_active");
+    const currentQuestionRef = ref(db, "quiz/current_question");
 
     const unsubscribeQuizActive = onValue(
       quizActiveRef,
@@ -47,7 +47,7 @@ const QuizApp = () => {
     if (quizActive) {
       const db = database;
       const dbRef = ref(db);
-      get(child(dbRef, `questions/${currentQuestion}`))
+      get(child(dbRef, `quiz/questions/${currentQuestion}`))
         .then((snapshot) => {
           if (snapshot.exists()) {
             setQuestions(snapshot.val());

@@ -43,7 +43,7 @@ const AddQuestions = () => {
     const questionId = questionData.text.split(" ").join("_");
 
     const db = getDatabase();
-    set(ref(db, `questions/${questionId}`), questionData)
+    set(ref(db, `quiz/questions/${questionId}`), questionData)
       .then(() => {
         toast.success("Question added successfully!");
         setTimeout(() => {

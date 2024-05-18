@@ -6,7 +6,7 @@ export async function POST(req) {
   const { id } = await req.json();
   try {
     const db = getDatabase();
-    const dbRef = ref(db, `current_question`);
+    const dbRef = ref(db, `quiz/current_question`);
     set(dbRef, id);
     return NextResponse.json({ message: "Question changed successfully" });
   } catch (error) {

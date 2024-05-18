@@ -7,7 +7,7 @@ export async function POST(req) {
     await req.json();
   const time = new Date().getTime();
   const ques_id = text.split(" ").join("_") + time;
-  set(ref(database, "questions/" + ques_id), {
+  set(ref(database, "quiz/questions/" + ques_id), {
     optionA: optionA,
     optionB: optionB,
     optionC: optionC,

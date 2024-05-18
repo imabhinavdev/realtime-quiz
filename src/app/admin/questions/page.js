@@ -9,7 +9,7 @@ const ControlPage = () => {
 
   useEffect(() => {
     const db = database;
-    const questionsRef = ref(db, "questions");
+    const questionsRef = ref(db, "quiz/questions");
 
     get(questionsRef)
       .then((snapshot) => {
