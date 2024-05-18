@@ -33,4 +33,8 @@ const AdminData = [
     text: "Quiz Control",
     link: "/admin/quiz",
   },
+  {
+    text: "Leaderboard",
+    link: "/admin/leaderboard",
+  },
 ];
