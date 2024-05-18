@@ -9,11 +9,25 @@ const QuizApp = () => {
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [btnActive, setBtnActive] = useState(true);
   const [quizActive, setQuizActive] = useState(false); // State to manage quiz active status
+  const [timeLeft, setTimeLeft] = useState(10); // Initial time for the countdown timer
+  const [showAnswer, setShowAnswer] = useState(false);
 
   useEffect(() => {
     const db = database;
     const quizActiveRef = ref(db, "quiz/quiz_active");
     const currentQuestionRef = ref(db, "quiz/current_question");
+    const showAnswerRef = ref(db, "quiz/showAnswer");
+
+    const unsubscribeShowAnswer = onValue(
+      showAnswerRef,
+      (snapshot) => {
+        const data = snapshot.val();
+        setShowAnswer(data);
+      },
+      (error) => {
+        console.error("Error fetching show answer status:", error);
+      }
+    );
 
     const unsubscribeQuizActive = onValue(
       quizActiveRef,
@@ -40,11 +54,12 @@ const QuizApp = () => {
     return () => {
       unsubscribeQuizActive();
       unsubscribeCurrentQuestion();
+      unsubscribeShowAnswer();
     };
   }, []);
 
   useEffect(() => {
-    if (quizActive) {
+    if (quizActive && currentQuestion !== null) {
       const db = database;
       const dbRef = ref(db);
       get(child(dbRef, `quiz/questions/${currentQuestion}`))
@@ -53,6 +68,7 @@ const QuizApp = () => {
             setQuestions(snapshot.val());
             setSelectedAnswer(""); // Reset selected answer
             setBtnActive(true); // Re-enable the button
+            setTimeLeft(10); // Reset the timer
           } else {
             console.log("No data available");
           }
@@ -62,6 +78,21 @@ const QuizApp = () => {
         });
     }
   }, [currentQuestion, quizActive]);
+
+  useEffect(() => {
+    // Countdown timer logic
+    let timer;
+    if (quizActive && timeLeft > 0) {
+      timer = setTimeout(() => {
+        setTimeLeft((prevTime) => prevTime - 1);
+      }, 1000);
+    } else {
+      setBtnActive(false); // Disable the submit button when time is up
+    }
+
+    // Cleanup function to clear the timer when component unmounts or timer stops
+    return () => clearTimeout(timer);
+  }, [timeLeft, quizActive]);
 
   const handleAnswerChange = (e) => {
     setSelectedAnswer(e.target.value);
@@ -75,7 +106,7 @@ const QuizApp = () => {
   if (!quizActive) {
     return (
       <div className="text-red-600 text-xl flex items-center ">
-        <p>The quiz is not active at the moment or has been ended !</p>
+        <p>The quiz is not active at the moment or has been ended!</p>
       </div>
     );
   }
@@ -87,76 +118,113 @@ const QuizApp = () => {
           <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-4">
             <h1 className="text-2xl font-bold text-gray-900">Question:</h1>
             <p className="text-xl text-gray-900">{questions.text}</p>
+            <div className="flex items-center">
+              <p className="text-red-600 font-semibold mr-2">
+                Time Left: {timeLeft}
+              </p>
+            </div>
             <fieldset>
               <legend className="sr-only">s</legend>
-              <div className="flex items-center mb-4">
-                <input
-                  id="optionA"
-                  type="radio"
-                  name="answers"
-                  value="optionA"
-                  checked={selectedAnswer === "optionA"}
-                  onChange={handleAnswerChange}
-                  className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600"
-                />
-                <label
-                  htmlFor="optionA"
-                  className="block ms-2 text-md md:text-lg font-medium text-gray-900 cursor-pointer"
+              {questions.optionA && (
+                <div
+                  className={`flex items-center mb-4 rounded-lg p-2 ${
+                    showAnswer && questions.correct === "optionA"
+                      ? "bg-green-400"
+                      : ""
+                  }`}
                 >
-                  {questions.optionA}
-                </label>
-              </div>
-              <div className="flex items-center mb-4">
-                <input
-                  id="optionB"
-                  type="radio"
-                  name="answers"
-                  value="optionB"
-                  checked={selectedAnswer === "optionB"}
-                  onChange={handleAnswerChange}
-                  className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600"
-                />
-                <label
-                  htmlFor="optionB"
-                  className="block ms-2 text-md md:text-lg font-medium text-gray-900 cursor-pointer"
+                  <input
+                    id="optionA"
+                    type="radio"
+                    name="answers"
+                    value="optionA"
+                    checked={selectedAnswer === "optionA"}
+                    onChange={handleAnswerChange}
+                    className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600"
+                  />
+                  <label
+                    htmlFor="optionA"
+                    className={`block ms-2 text-md md:text-lg font-medium text-gray-900 cursor-pointer `}
+                  >
+                    {questions.optionA}
+                  </label>
+                </div>
+              )}
+              {questions.optionB && (
+                <div
+                  className={`flex items-center mb-4 rounded-lg p-2 ${
+                    showAnswer && questions.correct === "optionB"
+                      ? "bg-green-400"
+                      : ""
+                  }`}
                 >
-                  {questions.optionB}
-                </label>
-              </div>
-              <div className="flex items-center mb-4">
-                <input
-                  id="optionC"
-                  type="radio"
-                  name="answers"
-                  value="optionC"
-                  checked={selectedAnswer === "optionC"}
-                  onChange={handleAnswerChange}
-                  className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300"
-                />
-                <label
-                  htmlFor="optionC"
-                  className="block ms-2 text-md md:text-lg font-medium text-gray-900 cursor-pointer"
+                  <input
+                    id="optionB"
+                    type="radio"
+                    name="answers"
+                    value="optionB"
+                    checked={selectedAnswer === "optionB"}
+                    onChange={handleAnswerChange}
+                    className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600"
+                  />
+                  <label
+                    htmlFor="optionB"
+                    className={`block ms-2 text-md md:text-lg font-medium text-gray-900 cursor-pointer `}
+                  >
+                    {questions.optionB}
+                  </label>
+                </div>
+              )}
+              {questions.optionC && (
+                <div
+                  className={`flex items-center mb-4 rounded-lg p-2 ${
+                    showAnswer && questions.correct === "optionC"
+                      ? "bg-green-400"
+                      : ""
+                  }`}
                 >
-                  {questions.optionC}
-                </label>
-              </div>
-              <div className="flex items-center mb-4">
-                <input
-                  id="optionD"
-                  type="radio"
-                  name="answers"
-                  value="optionD"
-                  checked={selectedAnswer === "optionD"}
-                  onChange={handleAnswerChange}
-                  className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300"
-                />
-                <label
-                  htmlFor="optionD"
-                  className="block ms-2 text-md md:text-lg font-medium text-gray-900 cursor-pointer"
+                  <input
+                    id="optionC"
+                    type="radio"
+                    name="answers"
+                    value="optionC"
+                    checked={selectedAnswer === "optionC"}
+                    onChange={handleAnswerChange}
+                    className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300"
+                  />
+                  <label
+                    htmlFor="optionC"
+                    className={`block ms-2 text-md md:text-lg font-medium text-gray-900 cursor-pointer `}
+                  >
+                    {questions.optionC}
+                  </label>
+                </div>
+              )}
+              {questions.optionD && (
+                <div
+                  className={`flex items-center mb-4 rounded-lg p-2 ${
+                    showAnswer && questions.correct === "optionD"
+                      ? "bg-green-400"
+                      : ""
+                  }`}
                 >
-                  {questions.optionD}
-                </label>
-              </div>
+                  <input
+                    id="optionD"
+                    type="radio"
+                    name="answers"
+                    value="optionD"
+                    checked={selectedAnswer === "optionD"}
+                    onChange={handleAnswerChange}
+                    className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300"
+                  />
+                  <label
+                    htmlFor="optionD"
+                    className={`block ms-2 text-md md:text-lg font-medium text-gray-900 cursor-pointer `}
+                  >
+                    {questions.optionD}
+                  </label>
+                </div>
+              )}
             </fieldset>
             <button
               type="submit"

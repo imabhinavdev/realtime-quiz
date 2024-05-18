@@ -25,44 +25,59 @@ const AddQuestions = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    if (
-      !questionData.text ||
-      !questionData.optionA ||
-      !questionData.optionB ||
-      !questionData.optionC ||
-      !questionData.optionD ||
-      !questionData.correct
-    ) {
-      toast.error("Please fill in all fields.");
-      return;
-    }
+  // Check if question text and correct answer are filled
+  if (!questionData.text || !questionData.correct) {
+    toast.error("Please fill in the question text and correct answer.");
+    return;
+  }
 
-    const questionId = questionData.text.split(" ").join("_");
-
-    const db = getDatabase();
-    set(ref(db, `quiz/questions/${questionId}`), questionData)
-      .then(() => {
-        toast.success("Question added successfully!");
-        setTimeout(() => {
-          router.push("/admin/questions");
-        }, 1500);
-        setQuestionData({
-          text: "",
-          optionA: "",
-          optionB: "",
-          optionC: "",
-          optionD: "",
-          correct: "",
-        });
-      })
-      .catch((error) => {
-        toast.error("Failed to add question. Please try again.");
-        console.error("Error adding question: ", error);
-      });
+  // Construct the questionData object
+  let constructedQuestionData = {
+    text: questionData.text,
+    correct: questionData.correct,
   };
+
+  // Add options if provided
+  if (questionData.optionA) {
+    constructedQuestionData.optionA = questionData.optionA;
+  }
+  if (questionData.optionB) {
+    constructedQuestionData.optionB = questionData.optionB;
+  }
+  if (questionData.optionC) {
+    constructedQuestionData.optionC = questionData.optionC;
+  }
+  if (questionData.optionD) {
+    constructedQuestionData.optionD = questionData.optionD;
+  }
+
+  const questionId = questionData.text.split(" ").join("_");
+
+  const db = getDatabase();
+  set(ref(db, `quiz/questions/${questionId}`), constructedQuestionData)
+    .then(() => {
+      toast.success("Question added successfully!");
+      setTimeout(() => {
+        router.push("/admin/questions");
+      }, 1500);
+      setQuestionData({
+        text: "",
+        optionA: "",
+        optionB: "",
+        optionC: "",
+        optionD: "",
+        correct: "",
+      });
+    })
+    .catch((error) => {
+      toast.error("Failed to add question. Please try again.");
+      console.error("Error adding question: ", error);
+    });
+};
+
 
   return (
     <>

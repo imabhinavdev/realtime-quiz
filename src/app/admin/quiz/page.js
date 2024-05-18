@@ -9,6 +9,7 @@ const AdminQuizControlPage = () => {
   const [quizActive, setQuizActive] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState("");
   const [questions, setQuestions] = useState([]);
+  const [showAnswer, setShowAnswer] = useState(false); // State to manage showAnswer status
 
   useEffect(() => {
     const db = getDatabase();
@@ -30,6 +31,13 @@ const AdminQuizControlPage = () => {
       }
     );
 
+    // Fetch showAnswer status from Firebase
+    const showAnswerRef = ref(db, "quiz/showAnswer");
+    const unsubscribeShowAnswer = onValue(showAnswerRef, (snapshot) => {
+      const data = snapshot.val();
+      setShowAnswer(data);
+    });
+
     // Fetch all questions from Firebase
     const questionsRef = ref(db, "quiz/questions");
     get(questionsRef)
@@ -48,6 +56,7 @@ const AdminQuizControlPage = () => {
     return () => {
       unsubscribeQuizActive();
       unsubscribeCurrentQuestion();
+      unsubscribeShowAnswer();
     };
   }, []);
 
@@ -55,12 +64,14 @@ const AdminQuizControlPage = () => {
     const db = getDatabase();
     set(ref(db, "quiz/quiz_active"), true);
     toast.success("Quiz started successfully");
+    handleToggleShowAnswer(false); // Reset showAnswer status in Firebase
   };
 
   const handleStopQuiz = () => {
     const db = getDatabase();
     set(ref(db, "quiz/quiz_active"), false);
     toast.success("Quiz stopped successfully");
+    handleToggleShowAnswer(false); // Reset showAnswer status in Firebase
   };
 
   const handleNextQuestion = () => {
@@ -69,6 +80,9 @@ const AdminQuizControlPage = () => {
       const nextQuestion = questions[currentIndex + 1];
       const db = getDatabase();
       set(ref(db, "quiz/current_question"), nextQuestion);
+      setShowAnswer(false); // Reset showAnswer to false
+      handleToggleShowAnswer(false); // Reset showAnswer status in Firebase
+
       toast.success("Next question is set successfully");
     }
   };
@@ -79,6 +93,9 @@ const AdminQuizControlPage = () => {
       const previousQuestion = questions[currentIndex - 1];
       const db = getDatabase();
       set(ref(db, "quiz/current_question"), previousQuestion);
+      handleToggleShowAnswer(false); // Reset showAnswer status in Firebase
+
+      setShowAnswer(false); // Reset showAnswer to false
       toast.success("Previous question is set successfully");
     }
   };
@@ -88,10 +105,19 @@ const AdminQuizControlPage = () => {
     if (questions.length > 0) {
       const firstQuestionId = questions[0];
       set(ref(db, "quiz/current_question"), firstQuestionId);
+      setShowAnswer(false); // Reset showAnswer to false
+      handleToggleShowAnswer(false); // Reset showAnswer status in Firebase
       toast.success("Quiz reset successfully");
     } else {
       toast.error("No questions available to reset the quiz");
     }
+  };
+
+  const handleToggleShowAnswer = (val) => {
+    const db = getDatabase();
+    const newShowAnswer = val;
+    setShowAnswer(newShowAnswer);
+    set(ref(db, "quiz/showAnswer"), newShowAnswer);
   };
 
   return (
@@ -128,6 +154,14 @@ const AdminQuizControlPage = () => {
             disabled={quizActive}
           >
             Reset Quiz
+          </button>
+          <button
+            className={`bg-blue-500 text-white px-4 py-2 rounded-lg`}
+            onClick={() => {
+              handleToggleShowAnswer(!showAnswer);
+            }}
+          >
+            {showAnswer ? "Hide Answers" : "Show Answers"}
           </button>
         </div>
         <div className="flex gap-4 w-full">

@@ -5,26 +5,39 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import database from "@/firebase/config";
 import { useRouter } from "next/navigation";
+
 const EditQuestions = ({ params }) => {
   const questionId = params.id;
   const [questionData, setQuestionData] = useState({
     text: "",
+    correct: "",
+  });
+  const [options, setOptions] = useState({
     optionA: "",
     optionB: "",
     optionC: "",
     optionD: "",
-    correct: "",
   });
   const router = useRouter();
 
   useEffect(() => {
     const db = getDatabase();
-    const questionRef = ref(db, `questions/${questionId}`);
+    const questionRef = ref(db, `/quiz/questions/${questionId}`);
 
     get(questionRef)
       .then((snapshot) => {
         if (snapshot.exists()) {
-          setQuestionData(snapshot.val());
+          const data = snapshot.val();
+          setQuestionData({
+            text: data.text,
+            correct: data.correct,
+          });
+          setOptions({
+            optionA: data.optionA || "",
+            optionB: data.optionB || "",
+            optionC: data.optionC || "",
+            optionD: data.optionD || "",
+          });
         } else {
           toast.error("Question not found");
         }
@@ -37,29 +50,50 @@ const EditQuestions = ({ params }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setQuestionData({
-      ...questionData,
-      [name]: value,
-    });
+    if (name === "text" || name === "correct") {
+      setQuestionData({
+        ...questionData,
+        [name]: value,
+      });
+    } else {
+      setOptions({
+        ...options,
+        [name]: value,
+      });
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (
-      !questionData.text ||
-      !questionData.optionA ||
-      !questionData.optionB ||
-      !questionData.optionC ||
-      !questionData.optionD ||
-      !questionData.correct
-    ) {
-      toast.error("Please fill in all fields.");
+    // Check if question text and correct answer are filled
+    if (!questionData.text || !questionData.correct) {
+      toast.error("Please fill in the question text and correct answer.");
       return;
     }
 
+    // Construct the questionData object
+    let constructedQuestionData = {
+      text: questionData.text,
+      correct: questionData.correct,
+    };
+
+    // Add options if provided
+    if (options.optionA) {
+      constructedQuestionData.optionA = options.optionA;
+    }
+    if (options.optionB) {
+      constructedQuestionData.optionB = options.optionB;
+    }
+    if (options.optionC) {
+      constructedQuestionData.optionC = options.optionC;
+    }
+    if (options.optionD) {
+      constructedQuestionData.optionD = options.optionD;
+    }
+
     const db = getDatabase();
-    set(ref(db, `questions/${questionId}`), questionData)
+    set(ref(db, `quiz/questions/${questionId}`), constructedQuestionData)
       .then(() => {
         toast.success("Question updated successfully!");
         setTimeout(() => {
@@ -95,13 +129,26 @@ const EditQuestions = ({ params }) => {
             />
           </div>
           <div className="flex flex-col gap-2">
+            <label htmlFor="correct" className="font-medium">
+              Correct Answer
+            </label>
+            <input
+              type="text"
+              name="correct"
+              value={questionData.correct}
+              onChange={handleChange}
+              className="p-2 border rounded"
+              placeholder="Enter the correct answer (e.g., optionA, optionB, etc.)"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
             <label htmlFor="optionA" className="font-medium">
               Option A
             </label>
             <input
               type="text"
               name="optionA"
-              value={questionData.optionA}
+              value={options.optionA}
               onChange={handleChange}
               className="p-2 border rounded"
               placeholder="Enter option A"
@@ -114,7 +161,7 @@ const EditQuestions = ({ params }) => {
             <input
               type="text"
               name="optionB"
-              value={questionData.optionB}
+              value={options.optionB}
               onChange={handleChange}
               className="p-2 border rounded"
               placeholder="Enter option B"
@@ -127,7 +174,7 @@ const EditQuestions = ({ params }) => {
             <input
               type="text"
               name="optionC"
-              value={questionData.optionC}
+              value={options.optionC}
               onChange={handleChange}
               className="p-2 border rounded"
               placeholder="Enter option C"
@@ -140,23 +187,10 @@ const EditQuestions = ({ params }) => {
             <input
               type="text"
               name="optionD"
-              value={questionData.optionD}
+              value={options.optionD}
               onChange={handleChange}
               className="p-2 border rounded"
               placeholder="Enter option D"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="correct" className="font-medium">
-              Correct Answer
-            </label>
-            <input
-              type="text"
-              name="correct"
-              value={questionData.correct}
-              onChange={handleChange}
-              className="p-2 border rounded"
-              placeholder="Enter the correct answer (e.g., optionA, optionB, etc.)"
             />
           </div>
           <button
