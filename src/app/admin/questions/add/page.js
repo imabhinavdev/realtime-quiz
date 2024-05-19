@@ -25,72 +25,73 @@ const AddQuestions = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+ const handleSubmit = (e) => {
+   e.preventDefault();
 
-    // Check if question text and correct answer are filled
-    if (!questionData.text || !questionData.correct) {
-      toast.error(
-        "Please fill in the question text and select the correct option."
-      );
-      return;
-    }
+   // Check if question text and correct answer are filled
+   if (!questionData.text || !questionData.correct) {
+     toast.error(
+       "Please fill in the question text and select the correct option."
+     );
+     return;
+   }
 
-    const db = database;
-    const questionNoRef = ref(db, "quiz/question_no");
+   const db = database;
+   const questionNoRef = ref(db, "quiz/question_no");
 
-    // Fetch current question number
-    get(questionNoRef)
-      .then((snapshot) => {
-        let currentQuestionNo = snapshot.val() || 0;
+   // Fetch current question number
+   get(questionNoRef)
+     .then((snapshot) => {
+       let currentQuestionNo = snapshot.val() || 0;
 
-        // Format question number to always have two digits
-        const formattedQuestionNo = String(currentQuestionNo).padStart(2, "0");
+       // Format question number to always have five digits
+       const formattedQuestionNo = String(currentQuestionNo).padStart(5, "0");
 
-        let time = new Date().getTime();
-        // Construct the questionData object
-        let constructedQuestionData = {
-          text: questionData.text,
-          optionA: questionData.optionA,
-          optionB: questionData.optionB,
-          optionC: questionData.optionC,
-          optionD: questionData.optionD,
-          correct: questionData.correct,
-          createdAt: time,
-        };
+       let time = new Date().getTime();
+       // Construct the questionData object
+       let constructedQuestionData = {
+         text: questionData.text,
+         optionA: questionData.optionA,
+         optionB: questionData.optionB,
+         optionC: questionData.optionC,
+         optionD: questionData.optionD,
+         correct: questionData.correct,
+         createdAt: time,
+       };
 
-        // Replace spaces and question marks with underscores
-        const replacedText = questionData.text.replace(/[\s?]/g, "_");
-        const questionId = `${formattedQuestionNo}_${replacedText}`;
+       // Replace spaces and question marks with underscores
+       const replacedText = questionData.text.replace(/[\s?]/g, "_");
+       const questionId = `${formattedQuestionNo}_${replacedText}`;
 
-        // Update question number in Firebase
-        set(questionNoRef, currentQuestionNo + 1);
+       // Update question number in Firebase
+       set(questionNoRef, currentQuestionNo + 1);
 
-        // Store the new question with the updated question number
-        set(ref(db, `quiz/questions/${questionId}`), constructedQuestionData)
-          .then(() => {
-            toast.success("Question added successfully!");
-            setTimeout(() => {
-              router.push("/admin/questions");
-            }, 1500);
-            setQuestionData({
-              text: "",
-              optionA: "",
-              optionB: "",
-              optionC: "",
-              optionD: "",
-              correct: "",
-            });
-          })
-          .catch((error) => {
-            toast.error("Failed to add question. Please try again.");
-            console.error("Error adding question: ", error);
-          });
-      })
-      .catch((error) => {
-        console.error("Error fetching question number: ", error);
-      });
-  };
+       // Store the new question with the updated question number
+       set(ref(db, `quiz/questions/${questionId}`), constructedQuestionData)
+         .then(() => {
+           toast.success("Question added successfully!");
+           setTimeout(() => {
+             router.push("/admin/questions");
+           }, 1500);
+           setQuestionData({
+             text: "",
+             optionA: "",
+             optionB: "",
+             optionC: "",
+             optionD: "",
+             correct: "",
+           });
+         })
+         .catch((error) => {
+           toast.error("Failed to add question. Please try again.");
+           console.error("Error adding question: ", error);
+         });
+     })
+     .catch((error) => {
+       console.error("Error fetching question number: ", error);
+     });
+ };
+
 
 
 
