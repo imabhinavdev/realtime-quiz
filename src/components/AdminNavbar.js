@@ -35,6 +35,6 @@ const AdminData = [
   },
   {
     text: "Leaderboard",
-    link: "/admin/leaderboard",
+    link: "/leaderboard",
   },
 ];

@@ -193,7 +193,7 @@ const QuizApp = ({ params }) => {
       .then((snapshot) => {
         const count = snapshot.val() || 0;
         const updatedCount = count + 1; // Increase count by 1
-        const dataToUpdate = {};
+        let dataToUpdate = {};
         dataToUpdate[`${selectedOption}SelectedCount`] = updatedCount;
         update(optionSelectedCountRef, dataToUpdate); // Update the count in the database
       })
