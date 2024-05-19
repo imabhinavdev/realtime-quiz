@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+progress::-webkit-progress-value {
+    background: #31D843;
+    transition: width 1s linear;
+    /* Smooth transition for width changes */
+}

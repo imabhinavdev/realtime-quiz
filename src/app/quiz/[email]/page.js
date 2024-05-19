@@ -25,7 +25,12 @@ const QuizApp = ({ params }) => {
   const [optionBSelectedCount, setOptionBSelectedCount] = useState(0);
   const [optionCSelectedCount, setOptionCSelectedCount] = useState(0);
   const [optionDSelectedCount, setOptionDSelectedCount] = useState(0);
+  const [barWidth, setBarWidth] = useState(0);
 
+  useEffect(() => {
+    // Update the bar width after the component is mounted
+    setBarWidth(100);
+  }, []);
   const encodeEmail = (email) => {
     return email.replace(/\./g, "%2E");
   };
@@ -220,10 +225,24 @@ const QuizApp = ({ params }) => {
             <h1 className="text-2xl font-bold text-gray-900">Question:</h1>
 
             <p className="text-xl text-gray-900">{questions.text}</p>
-            <div className="flex items-center">
+            <div className="flex items-start flex-col">
               <p className="text-red-600 font-semibold mr-2">
                 Time Left: {timeLeft}
               </p>
+              <progress
+                className=" w-full h-2 bg-gray-200 rounded-md overflow-hidden translate-all ease-out duration-2000"
+                value={timeLeft}
+                max="10"
+              >
+                {/* Define the yellow progress bar */}
+                <div
+                  className="h-full text-yellow-500 "
+                  style={{
+                    width: `${(timeLeft / 10) * 100}%`, // Adjust width based on timeLeft
+                    transition: "width 1s ease-out", // Smooth transition for width changes
+                  }}
+                ></div>
+              </progress>
             </div>
             <fieldset>
               <legend className="sr-only">s</legend>
@@ -232,6 +251,8 @@ const QuizApp = ({ params }) => {
                   className={`flex items-center mb-4 rounded-lg p-2 ${
                     showAnswer && questions.correct === "optionA"
                       ? "bg-green-400"
+                      : showAnswer && selectedAnswer === "optionA"
+                      ? "bg-red-400"
                       : ""
                   }`}
                 >
@@ -259,11 +280,14 @@ const QuizApp = ({ params }) => {
                   </div>
                 </div>
               )}
+
               {questions.optionB && (
                 <div
                   className={`flex items-center mb-4 rounded-lg p-2 ${
                     showAnswer && questions.correct === "optionB"
                       ? "bg-green-400"
+                      : showAnswer && selectedAnswer === "optionB"
+                      ? "bg-red-400"
                       : ""
                   }`}
                 >
@@ -291,11 +315,14 @@ const QuizApp = ({ params }) => {
                   </div>
                 </div>
               )}
+
               {questions.optionC && (
                 <div
                   className={`flex items-center mb-4 rounded-lg p-2 ${
                     showAnswer && questions.correct === "optionC"
                       ? "bg-green-400"
+                      : showAnswer && selectedAnswer === "optionC"
+                      ? "bg-red-400"
                       : ""
                   }`}
                 >
@@ -323,11 +350,14 @@ const QuizApp = ({ params }) => {
                   </div>
                 </div>
               )}
+
               {questions.optionD && (
                 <div
                   className={`flex items-center mb-4 rounded-lg p-2 ${
                     showAnswer && questions.correct === "optionD"
                       ? "bg-green-400"
+                      : showAnswer && selectedAnswer === "optionD"
+                      ? "bg-red-400"
                       : ""
                   }`}
                 >
