@@ -37,7 +37,6 @@ const ControlPage = () => {
         const updatedQuestions = { ...questions };
         delete updatedQuestions[questionId];
         setQuestions(updatedQuestions);
-        console.log("Question deleted successfully");
       })
       .catch((error) => {
         console.error("Error deleting question:", error);

@@ -193,9 +193,7 @@ const QuizApp = ({ params }) => {
       .then((snapshot) => {
         const count = snapshot.val() || 0;
         const updatedCount = count + 1; // Increase count by 1
-        let dataToUpdate = {};
-        dataToUpdate[`${selectedOption}SelectedCount`] = updatedCount;
-        update(optionSelectedCountRef, dataToUpdate); // Update the count in the database
+        update(optionSelectedCountRef, updatedCount); // Update the count in the database directly without creating an object
       })
       .catch((error) => {
         if (error.code === "PERMISSION_DENIED") {
@@ -205,6 +203,7 @@ const QuizApp = ({ params }) => {
         }
       });
   };
+
 
   if (!quizActive) {
     return (

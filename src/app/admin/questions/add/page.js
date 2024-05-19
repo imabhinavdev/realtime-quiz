@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { getDatabase, ref, set } from "firebase/database";
+import { getDatabase, ref, set,get } from "firebase/database";
 import database from "@/firebase/config";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -36,39 +36,56 @@ const AddQuestions = () => {
       return;
     }
 
-    let time = new Date().getTime();
-    // Construct the questionData object
-    let constructedQuestionData = {
-      text: questionData.text,
-      optionA: questionData.optionA,
-      optionB: questionData.optionB,
-      optionC: questionData.optionC,
-      optionD: questionData.optionD,
-      correct: questionData.correct,
-      createdAt: time,
-    };
+    const db = database;
+    const questionNoRef = ref(db, "quiz/question_no");
 
-    const questionId = questionData.text.split(" ").join("_");
+    // Fetch current question number
+    get(questionNoRef)
+      .then((snapshot) => {
+        const currentQuestionNo = snapshot.val() || 0;
 
-    const db = getDatabase();
-    set(ref(db, `quiz/questions/${questionId}`), constructedQuestionData)
-      .then(() => {
-        toast.success("Question added successfully!");
-        setTimeout(() => {
-          router.push("/admin/questions");
-        }, 1500);
-        setQuestionData({
-          text: "",
-          optionA: "",
-          optionB: "",
-          optionC: "",
-          optionD: "",
-          correct: "",
-        });
+        let time = new Date().getTime();
+        // Construct the questionData object
+        let constructedQuestionData = {
+          text: questionData.text,
+          optionA: questionData.optionA,
+          optionB: questionData.optionB,
+          optionC: questionData.optionC,
+          optionD: questionData.optionD,
+          correct: questionData.correct,
+          createdAt: time,
+        };
+
+        const questionId = `${currentQuestionNo}_${questionData.text
+          .split(" ")
+          .join("_")}`;
+
+        // Update question number in Firebase
+        set(questionNoRef, currentQuestionNo + 1);
+
+        // Store the new question with the updated question number
+        set(ref(db, `quiz/questions/${questionId}`), constructedQuestionData)
+          .then(() => {
+            toast.success("Question added successfully!");
+            setTimeout(() => {
+              router.push("/admin/questions");
+            }, 1500);
+            setQuestionData({
+              text: "",
+              optionA: "",
+              optionB: "",
+              optionC: "",
+              optionD: "",
+              correct: "",
+            });
+          })
+          .catch((error) => {
+            toast.error("Failed to add question. Please try again.");
+            console.error("Error adding question: ", error);
+          });
       })
       .catch((error) => {
-        toast.error("Failed to add question. Please try again.");
-        console.error("Error adding question: ", error);
+        console.error("Error fetching question number: ", error);
       });
   };
 
