@@ -6,7 +6,7 @@ const AdminNavbar = () => {
     <div>
       {/* Admin Navbar */}
       <nav>
-        <ul className="flex gap-4 my-2 mb-4 mx-1">
+        <ul className="grid grid-cols-3 md:grid-cols-6 gap-4 my-2 mb-4 mx-1">
           {AdminData.map((item, index) => (
             <Link href={item.link} key={index} className="font-semibold">
               <li> {item.text} </li>

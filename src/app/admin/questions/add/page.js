@@ -14,6 +14,7 @@ const AddQuestions = () => {
     optionC: "",
     optionD: "",
     correct: "", // For storing the correct option
+    timer: 10, // Default timer value
   });
   const router = useRouter();
 
@@ -25,81 +26,95 @@ const AddQuestions = () => {
     });
   };
 
- const handleSubmit = (e) => {
-   e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-   // Check if question text and correct answer are filled
-   if (!questionData.text || !questionData.correct) {
-     toast.error(
-       "Please fill in the question text and select the correct option."
-     );
-     return;
-   }
+    // Check if question text, correct answer, and timer are filled
+    if (
+      !questionData.text ||
+      !questionData.correct ||
+      questionData.timer < 10
+    ) {
+      toast.error(
+        "Please fill in the question text, select the correct option, and set the timer (minimum 10 seconds)."
+      );
+      return;
+    }
 
-   const db = database;
-   const questionNoRef = ref(db, "quiz/question_no");
+    const db = database;
+    const questionNoRef = ref(db, "quiz/question_no");
 
-   // Fetch current question number
-   get(questionNoRef)
-     .then((snapshot) => {
-       let currentQuestionNo = snapshot.val() || 0;
+    // Fetch current question number
+    get(questionNoRef)
+      .then((snapshot) => {
+        let currentQuestionNo = snapshot.val() || 0;
 
-       // Format question number to always have five digits
-       const formattedQuestionNo = String(currentQuestionNo).padStart(5, "0");
+        // Format question number to always have five digits
+        const formattedQuestionNo = String(currentQuestionNo).padStart(5, "0");
 
-       let time = new Date().getTime();
-       // Construct the questionData object
-       let constructedQuestionData = {
-         text: questionData.text,
-         optionA: questionData.optionA,
-         optionB: questionData.optionB,
-         optionC: questionData.optionC,
-         optionD: questionData.optionD,
-         correct: questionData.correct,
-         createdAt: time,
-       };
+        let time = new Date().getTime();
+        // Construct the questionData object
+        let constructedQuestionData = {
+          text: questionData.text,
+          optionA: questionData.optionA,
+          optionB: questionData.optionB,
+          optionC: questionData.optionC,
+          optionD: questionData.optionD,
+          correct: questionData.correct,
+          timer: questionData.timer, // Include timer value
+          createdAt: time,
+        };
 
-       // Replace spaces and question marks with underscores
-       const replacedText = questionData.text.replace(/[\s?]/g, "_");
-       const questionId = `${formattedQuestionNo}_${replacedText}`;
+        // Replace spaces and question marks with underscores
+        const replacedText = questionData.text.replace(/[\s?]/g, "_");
+        const questionId = `${formattedQuestionNo}_${replacedText}`;
 
-       // Update question number in Firebase
-       set(questionNoRef, currentQuestionNo + 1);
+        // Update question number in Firebase
+        set(questionNoRef, currentQuestionNo + 1);
 
-       // Store the new question with the updated question number
-       set(ref(db, `quiz/questions/${questionId}`), constructedQuestionData)
-         .then(() => {
-           toast.success("Question added successfully!");
-           setTimeout(() => {
-             router.push("/admin/questions");
-           }, 1500);
-           setQuestionData({
-             text: "",
-             optionA: "",
-             optionB: "",
-             optionC: "",
-             optionD: "",
-             correct: "",
-           });
-         })
-         .catch((error) => {
-           toast.error("Failed to add question. Please try again.");
-           console.error("Error adding question: ", error);
-         });
-     })
-     .catch((error) => {
-       console.error("Error fetching question number: ", error);
-     });
- };
-
-
-
+        // Store the new question with the updated question number
+        set(ref(db, `quiz/questions/${questionId}`), constructedQuestionData)
+          .then(() => {
+            toast.success("Question added successfully!");
+            setTimeout(() => {
+              router.push("/admin/questions");
+            }, 1500);
+            setQuestionData({
+              text: "",
+              optionA: "",
+              optionB: "",
+              optionC: "",
+              optionD: "",
+              correct: "",
+              timer: 10, // Reset timer value after submission
+            });
+          })
+          .catch((error) => {
+            toast.error("Failed to add question. Please try again.");
+            console.error("Error adding question: ", error);
+          });
+      })
+      .catch((error) => {
+        console.error("Error fetching question number: ", error);
+      });
+  };
 
   const handleOptionChange = (e) => {
     const { value } = e.target;
     setQuestionData({
       ...questionData,
       correct: value,
+    });
+  };
+
+  const handleTimerChange = (e) => {
+    let timerValue = parseInt(e.target.value);
+    if (timerValue < 10) {
+      timerValue = 10; // Minimum timer value is 10 seconds
+    }
+    setQuestionData({
+      ...questionData,
+      timer: timerValue,
     });
   };
 
@@ -207,6 +222,20 @@ const AddQuestions = () => {
                 placeholder="Enter option D"
               />
             </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="timer" className="font-medium">
+              Timer (seconds)
+            </label>
+            <input
+              type="number"
+              name="timer"
+              value={questionData.timer}
+              onChange={handleTimerChange}
+              className="p-2 border rounded"
+              min="10"
+              placeholder="Enter the timer value (minimum 10)"
+            />
           </div>
           <button
             type="submit"

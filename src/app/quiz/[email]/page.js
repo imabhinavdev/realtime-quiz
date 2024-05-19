@@ -20,17 +20,18 @@ const QuizApp = ({ params }) => {
   const [quizActive, setQuizActive] = useState(false);
   const [timeLeft, setTimeLeft] = useState(10);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [timer, setTimer] = useState(null); // Declare timer state
   const [optionASelectedCount, setOptionASelectedCount] = useState(0);
   const [optionBSelectedCount, setOptionBSelectedCount] = useState(0);
   const [optionCSelectedCount, setOptionCSelectedCount] = useState(0);
   const [optionDSelectedCount, setOptionDSelectedCount] = useState(0);
   const [barWidth, setBarWidth] = useState(0);
+  const [timer, setTimer] = useState(null);
 
   useEffect(() => {
     // Update the bar width after the component is mounted
     setBarWidth(100);
   }, []);
+
   const encodeEmail = (email) => {
     return email.replace(/\./g, "%2E");
   };
@@ -114,10 +115,11 @@ const QuizApp = ({ params }) => {
       get(child(dbRef, `quiz/questions/${currentQuestion}`))
         .then((snapshot) => {
           if (snapshot.exists()) {
-            setQuestions(snapshot.val());
+            const questionData = snapshot.val();
+            setQuestions(questionData);
             setSelectedAnswer("");
             setBtnActive(true);
-            setTimeLeft(10);
+            setTimeLeft(questionData.timer || 10); // Set timer dynamically
           } else {
             console.log("No data available");
           }
@@ -129,19 +131,19 @@ const QuizApp = ({ params }) => {
   }, [currentQuestion, quizActive]);
 
   useEffect(() => {
-    let timer; // Declare timer variable within useEffect
-
     if (quizActive && timeLeft > 0) {
-      timer = setTimeout(() => {
-        setTimeLeft((prevTime) => prevTime - 1);
-      }, 1000);
+      setTimer(
+        setTimeout(() => {
+          setTimeLeft((prevTime) => prevTime - 1);
+        }, 1000)
+      );
     } else {
+      // If time runs out, set time left to 0 and stop the timer
+      setTimeLeft(0);
       setBtnActive(false);
     }
 
-    setTimer(timer); // Set timer state
-
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timer); // Clear the timer when the component unmounts
   }, [timeLeft, quizActive]);
 
   const handleAnswerChange = (e) => {
@@ -155,6 +157,7 @@ const QuizApp = ({ params }) => {
     // Check if the selected answer is correct
     const isCorrect = questions.correct === selectedAnswer;
 
+    // Clear the timer
     clearTimeout(timer);
 
     if (isCorrect) {
@@ -232,13 +235,12 @@ const QuizApp = ({ params }) => {
               <progress
                 className=" w-full h-2 bg-gray-200 rounded-md overflow-hidden translate-all ease-out duration-2000"
                 value={timeLeft}
-                max="10"
+                max={questions.timer || 10} // Set max value dynamically
               >
-                {/* Define the yellow progress bar */}
                 <div
-                  className="h-full text-yellow-500 "
+                  className="h-full text-yellow-500"
                   style={{
-                    width: `${(timeLeft / 10) * 100}%`, // Adjust width based on timeLeft
+                    width: `${(timeLeft / (questions.timer || 10)) * 100}%`, // Adjust width based on timeLeft
                     transition: "width 1s ease-out", // Smooth transition for width changes
                   }}
                 ></div>
