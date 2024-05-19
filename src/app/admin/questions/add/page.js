@@ -42,7 +42,10 @@ const AddQuestions = () => {
     // Fetch current question number
     get(questionNoRef)
       .then((snapshot) => {
-        const currentQuestionNo = snapshot.val() || 0;
+        let currentQuestionNo = snapshot.val() || 0;
+
+        // Format question number to always have two digits
+        const formattedQuestionNo = String(currentQuestionNo).padStart(2, "0");
 
         let time = new Date().getTime();
         // Construct the questionData object
@@ -58,7 +61,7 @@ const AddQuestions = () => {
 
         // Replace spaces and question marks with underscores
         const replacedText = questionData.text.replace(/[\s?]/g, "_");
-        const questionId = `${currentQuestionNo}_${replacedText}`;
+        const questionId = `${formattedQuestionNo}_${replacedText}`;
 
         // Update question number in Firebase
         set(questionNoRef, currentQuestionNo + 1);
@@ -88,6 +91,7 @@ const AddQuestions = () => {
         console.error("Error fetching question number: ", error);
       });
   };
+
 
 
   const handleOptionChange = (e) => {
