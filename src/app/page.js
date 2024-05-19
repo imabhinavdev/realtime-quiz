@@ -3,7 +3,7 @@ import React from "react";
 
 const HomePage = () => {
   return (
-    <div className="">
+    <div className="w-full">
       <Card
         title="Take Quiz"
         desc="This is a quiz app where you can take a quiz and test your knowledge."

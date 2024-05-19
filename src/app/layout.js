@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${pop.className} bg-slate-100 `}>
         <NavBar />
-        <div className="gap-x-14 items-center max-w-screen-xl mx-auto px-4 md:flex md:px-8">
+        <div className="gap-x-14 items-center justify-center max-w-screen-xl mx-auto px-4 md:flex md:px-8">
           {children}
         </div>
       </body>

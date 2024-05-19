@@ -24,12 +24,14 @@ const QuizApp = ({ params }) => {
   const [optionBSelectedCount, setOptionBSelectedCount] = useState(0);
   const [optionCSelectedCount, setOptionCSelectedCount] = useState(0);
   const [optionDSelectedCount, setOptionDSelectedCount] = useState(0);
-  const [barWidth, setBarWidth] = useState(0);
+  const [barWidth, setBarWidth] = useState(100);
   const [timer, setTimer] = useState(null);
 
   useEffect(() => {
-    // Update the bar width after the component is mounted
-    setBarWidth(100);
+    // Delay updating the progress bar's width until after the component has mounted
+    setTimeout(() => {
+      setBarWidth(100); // Update the width to 100 after a delay
+    }, 1000); // Adjust the delay time as needed
   }, []);
 
   const encodeEmail = (email) => {
@@ -232,19 +234,21 @@ const QuizApp = ({ params }) => {
               <p className="text-red-600 font-semibold mr-2">
                 Time Left: {timeLeft}
               </p>
-              <progress
-                className=" w-full h-2 bg-gray-200 rounded-md overflow-hidden translate-all ease-out duration-2000"
-                value={timeLeft}
-                max={questions.timer || 10} // Set max value dynamically
-              >
-                <div
-                  className="h-full text-yellow-500"
-                  style={{
-                    width: `${(timeLeft / (questions.timer || 10)) * 100}%`, // Adjust width based on timeLeft
-                    transition: "width 1s ease-out", // Smooth transition for width changes
-                  }}
-                ></div>
-              </progress>
+
+              {Object.keys(questions).length > 0 && (
+                <progress
+                  className="w-full h-2 bg-gray-200 rounded-md overflow-hidden translate-all ease-out duration-2000"
+                  value={timeLeft}
+                  max={questions.timer || 10} // Set max value dynamically
+                >
+                  <div
+                    className="h-full text-yellow-500"
+                    style={{
+                      width: `${(timeLeft / (questions.timer || 10)) * 100}%`, // Adjust width based on timeLeft
+                    }}
+                  ></div>
+                </progress>
+              )}
             </div>
             <fieldset>
               <legend className="sr-only">s</legend>
