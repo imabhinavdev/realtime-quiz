@@ -8,7 +8,9 @@ import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 
 const EditQuestions = () => {
-  const { id } = useParams(); // Assuming you have set up routing to pass `id` as a parameter
+  let { id } = useParams(); // Assuming you have set up routing to pass `id` as a parameter
+  id = decodeURIComponent(id);
+
   const questionId = decodeURIComponent(id);
   const [questionData, setQuestionData] = useState({
     text: "",

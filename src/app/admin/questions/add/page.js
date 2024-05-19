@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { getDatabase, ref, set,get } from "firebase/database";
+import { getDatabase, ref, set, get } from "firebase/database";
 import database from "@/firebase/config";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -56,9 +56,9 @@ const AddQuestions = () => {
           createdAt: time,
         };
 
-        const questionId = `${currentQuestionNo}_${questionData.text
-          .split(" ")
-          .join("_")}`;
+        // Replace spaces and question marks with underscores
+        const replacedText = questionData.text.replace(/[\s?]/g, "_");
+        const questionId = `${currentQuestionNo}_${replacedText}`;
 
         // Update question number in Firebase
         set(questionNoRef, currentQuestionNo + 1);
@@ -88,6 +88,7 @@ const AddQuestions = () => {
         console.error("Error fetching question number: ", error);
       });
   };
+
 
   const handleOptionChange = (e) => {
     const { value } = e.target;
