@@ -7,6 +7,7 @@ import {
   get,
   child,
   update,
+  set,
 } from "firebase/database";
 import database from "@/firebase/config";
 
@@ -183,26 +184,34 @@ const QuizApp = ({ params }) => {
       });
   };
 
-  const updateOptionSelectedCount = (questionId, selectedOption) => {
-    const db = database;
-    const optionSelectedCountRef = ref(
-      db,
-      `quiz/questions/${questionId}/${selectedOption}SelectedCount`
-    );
-    get(optionSelectedCountRef)
-      .then((snapshot) => {
-        const count = snapshot.val() || 0;
-        const updatedCount = count + 1; // Increase count by 1
-        update(optionSelectedCountRef, updatedCount); // Update the count in the database directly without creating an object
-      })
-      .catch((error) => {
-        if (error.code === "PERMISSION_DENIED") {
-          console.error("Permission denied to update count.");
-        } else {
-          console.error("Error updating option selected count:", error);
-        }
-      });
-  };
+ const updateOptionSelectedCount = (questionId, selectedOption) => {
+   const db = database;
+   const optionSelectedCountRef = ref(
+     db,
+     `quiz/questions/${questionId}/${selectedOption}SelectedCount`
+   );
+   get(optionSelectedCountRef)
+     .then((snapshot) => {
+       const count = snapshot.val() || 0;
+       const updatedCount = count + 1; // Increase count by 1
+       const updates = {};
+       updates[`${selectedOption}SelectedCount`] = updatedCount;
+       update(optionSelectedCountRef, updates) // Update the count in the database
+         .then(() => {
+           console.log("Option selected count updated successfully.");
+         })
+         .catch((error) => {
+           console.error("Error updating option selected count:", error);
+         });
+     })
+     .catch((error) => {
+       if (error.code === "PERMISSION_DENIED") {
+         console.error("Permission denied to update count.");
+       } else {
+         console.error("Error updating option selected count:", error);
+       }
+     });
+ };
 
 
   if (!quizActive) {
