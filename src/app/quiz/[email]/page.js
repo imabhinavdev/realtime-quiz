@@ -84,24 +84,16 @@ const QuizApp = ({ params }) => {
         .then((snapshot) => {
           const data = snapshot.val();
           setOptionASelectedCount(
-            data.optionASelectedCount
-              ? data.optionASelectedCount.optionASelectedCount
-              : 0
+            data.optionASelectedCount ? data.optionASelectedCount : 0
           );
           setOptionBSelectedCount(
-            data.optionBSelectedCount
-              ? data.optionBSelectedCount.optionBSelectedCount
-              : 0
+            data.optionBSelectedCount ? data.optionBSelectedCount : 0
           );
           setOptionCSelectedCount(
-            data.optionCSelectedCount
-              ? data.optionCSelectedCount.optionCSelectedCount
-              : 0
+            data.optionCSelectedCount ? data.optionCSelectedCount : 0
           );
           setOptionDSelectedCount(
-            data.optionDSelectedCount
-              ? data.optionDSelectedCount.optionDSelectedCount
-              : 0
+            data.optionDSelectedCount ? data.optionDSelectedCount : 0
           );
         })
         .catch((error) => {
@@ -184,35 +176,32 @@ const QuizApp = ({ params }) => {
       });
   };
 
- const updateOptionSelectedCount = (questionId, selectedOption) => {
-   const db = database;
-   const optionSelectedCountRef = ref(
-     db,
-     `quiz/questions/${questionId}/${selectedOption}SelectedCount`
-   );
-   get(optionSelectedCountRef)
-     .then((snapshot) => {
-       const count = snapshot.val() || 0;
-       const updatedCount = count + 1; // Increase count by 1
-       const updates = {};
-       updates[`${selectedOption}SelectedCount`] = updatedCount;
-       update(optionSelectedCountRef, updates) // Update the count in the database
-         .then(() => {
-           console.log("Option selected count updated successfully.");
-         })
-         .catch((error) => {
-           console.error("Error updating option selected count:", error);
-         });
-     })
-     .catch((error) => {
-       if (error.code === "PERMISSION_DENIED") {
-         console.error("Permission denied to update count.");
-       } else {
-         console.error("Error updating option selected count:", error);
-       }
-     });
- };
-
+  const updateOptionSelectedCount = (questionId, selectedOption) => {
+    const db = database;
+    const optionSelectedCountRef = ref(
+      db,
+      `quiz/questions/${questionId}/${selectedOption}SelectedCount`
+    );
+    get(optionSelectedCountRef)
+      .then((snapshot) => {
+        const count = snapshot.val() || 0;
+        const updatedCount = count + 1; // Increase count by 1
+        set(optionSelectedCountRef, updatedCount) // Set the count directly in the database
+          .then(() => {
+            console.log("Option selected count updated successfully.");
+          })
+          .catch((error) => {
+            console.error("Error updating option selected count:", error);
+          });
+      })
+      .catch((error) => {
+        if (error.code === "PERMISSION_DENIED") {
+          console.error("Permission denied to update count.");
+        } else {
+          console.error("Error updating option selected count:", error);
+        }
+      });
+  };
 
   if (!quizActive) {
     return (
