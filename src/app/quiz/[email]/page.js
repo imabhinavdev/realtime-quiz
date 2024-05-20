@@ -27,16 +27,15 @@ const QuizApp = ({ params }) => {
   const [barWidth, setBarWidth] = useState(100);
   const [timer, setTimer] = useState(null);
 
+  const encodeEmail = (email) => {
+    return email.replace(/\./g, "%2E");
+  };
   useEffect(() => {
     // Delay updating the progress bar's width until after the component has mounted
     setTimeout(() => {
       setBarWidth(100); // Update the width to 100 after a delay
     }, 1000); // Adjust the delay time as needed
   }, []);
-
-  const encodeEmail = (email) => {
-    return email.replace(/\./g, "%2E");
-  };
 
   useEffect(() => {
     const db = database;
@@ -269,6 +268,7 @@ const QuizApp = ({ params }) => {
                     value="optionA"
                     checked={selectedAnswer === "optionA"}
                     onChange={handleAnswerChange}
+                    disabled={!btnActive}
                     className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600"
                   />
                   <div className="flex w-full justify-between h-full items-center">
@@ -304,6 +304,7 @@ const QuizApp = ({ params }) => {
                     value="optionB"
                     checked={selectedAnswer === "optionB"}
                     onChange={handleAnswerChange}
+                    disabled={!btnActive}
                     className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600"
                   />
                   <div className="flex w-full justify-between h-full items-center">
@@ -339,6 +340,7 @@ const QuizApp = ({ params }) => {
                     value="optionC"
                     checked={selectedAnswer === "optionC"}
                     onChange={handleAnswerChange}
+                    disabled={!btnActive}
                     className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300"
                   />
                   <div className="flex w-full justify-between h-full items-center">
@@ -374,6 +376,7 @@ const QuizApp = ({ params }) => {
                     value="optionD"
                     checked={selectedAnswer === "optionD"}
                     onChange={handleAnswerChange}
+                    disabled={!btnActive}
                     className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300"
                   />
                   <div className="flex w-full justify-between h-full items-center">
