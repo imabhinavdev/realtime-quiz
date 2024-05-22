@@ -82,6 +82,7 @@ const ControlPage = () => {
                     {question.text}
                   </h4>
                   <p className="text-sm">{question.correct}</p>
+                  <p className="text-sm">{question.timer}</p>
                 </div>
                 <Link
                   href={`/mainhuadmin/questions/edit/${id}`}

@@ -15,6 +15,7 @@ const EditQuestions = () => {
   const [questionData, setQuestionData] = useState({
     text: "",
     correct: "",
+    timer: 10, // Default timer value
   });
   const [options, setOptions] = useState({
     optionA: "",
@@ -35,6 +36,7 @@ const EditQuestions = () => {
           setQuestionData({
             text: data.text,
             correct: data.correct,
+            timer: data.timer || 10, // Set timer value if it exists, otherwise default to 10
           });
           setOptions({
             optionA: data.optionA || "",
@@ -54,7 +56,7 @@ const EditQuestions = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "text" || name === "correct") {
+    if (name === "text" || name === "correct" || name === "timer") {
       setQuestionData({
         ...questionData,
         [name]: value,
@@ -75,13 +77,28 @@ const EditQuestions = () => {
     });
   };
 
+  const handleTimerChange = (e) => {
+    let timerValue = parseInt(e.target.value);
+    if (timerValue < 10) {
+      timerValue = 10; // Minimum timer value is 10 seconds
+    }
+    setQuestionData({
+      ...questionData,
+      timer: timerValue,
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Check if question text and correct answer are filled
-    if (!questionData.text || !questionData.correct) {
+    // Check if question text, correct answer, and timer are filled
+    if (
+      !questionData.text ||
+      !questionData.correct ||
+      questionData.timer < 10
+    ) {
       toast.error(
-        "Please fill in the question text and select the correct option."
+        "Please fill in the question text, select the correct option, and set the timer (minimum 10 seconds)."
       );
       return;
     }
@@ -94,6 +111,7 @@ const EditQuestions = () => {
       optionC: options.optionC,
       optionD: options.optionD,
       correct: questionData.correct,
+      timer: questionData.timer,
       updatedAt: new Date().getTime(),
     };
 
@@ -215,6 +233,20 @@ const EditQuestions = () => {
                 placeholder="Enter option D"
               />
             </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="timer" className="font-medium">
+              Timer (seconds)
+            </label>
+            <input
+              type="number"
+              name="timer"
+              value={questionData.timer}
+              onChange={handleTimerChange}
+              className="p-2 border rounded"
+              min="10"
+              placeholder="Enter the timer value (minimum 10)"
+            />
           </div>
           <button
             type="submit"
