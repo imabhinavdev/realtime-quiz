@@ -102,7 +102,7 @@ const EditQuestions = () => {
       .then(() => {
         toast.success("Question updated successfully!");
         setTimeout(() => {
-          router.push("/admin/questions");
+          router.push("/mainhuadmin/questions");
         }, 1500);
       })
       .catch((error) => {

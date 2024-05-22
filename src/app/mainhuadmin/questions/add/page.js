@@ -77,7 +77,7 @@ const AddQuestions = () => {
           .then(() => {
             toast.success("Question added successfully!");
             setTimeout(() => {
-              router.push("/admin/questions");
+              router.push("/mainhuadmin/questions");
             }, 1500);
             setQuestionData({
               text: "",

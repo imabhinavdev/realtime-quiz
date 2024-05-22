@@ -64,7 +64,7 @@ const ControlPage = () => {
           </p>
           <span>
             <Link
-              href="/admin/questions/add"
+              href="/mainhuadmin/questions/add"
               className="p-2 bg-blue-700 text-white rounded-full px-4"
             >
               Add Question
@@ -84,7 +84,7 @@ const ControlPage = () => {
                   <p className="text-sm">{question.correct}</p>
                 </div>
                 <Link
-                  href={`/admin/questions/edit/${id}`}
+                  href={`/mainhuadmin/questions/edit/${id}`}
                   className="text-gray-700 text-sm border rounded-lg px-3 mx-2 py-2 duration-150 hover:bg-gray-100"
                 >
                   Edit

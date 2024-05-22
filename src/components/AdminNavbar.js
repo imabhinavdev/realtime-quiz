@@ -23,15 +23,15 @@ export default AdminNavbar;
 const AdminData = [
   {
     text: "Dashboard",
-    link: "/admin",
+    link: "/mainhuadmin",
   },
   {
     text: "Questions",
-    link: "/admin/questions",
+    link: "/mainhuadmin/questions",
   },
   {
     text: "Quiz Control",
-    link: "/admin/quiz",
+    link: "/mainhuadmin/quiz",
   },
   {
     text: "Leaderboard",
