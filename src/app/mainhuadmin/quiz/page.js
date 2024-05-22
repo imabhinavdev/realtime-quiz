@@ -80,14 +80,14 @@ const AdminQuizControlPage = () => {
   }, []);
 
   const handleStartQuiz = () => {
-    const db = getDatabase();
+    const db = database;
     set(ref(db, "quiz/quiz_active"), true);
     toast.success("Quiz started successfully");
     handleToggleShowAnswer(false); // Reset showAnswer status in Firebase
   };
 
   const handleStopQuiz = () => {
-    const db = getDatabase();
+    const db = database;
     set(ref(db, "quiz/quiz_active"), false);
     toast.success("Quiz stopped successfully");
     handleToggleShowAnswer(false); // Reset showAnswer status in Firebase
@@ -97,7 +97,7 @@ const AdminQuizControlPage = () => {
     const currentIndex = questions.indexOf(currentQuestion);
     if (currentIndex < questions.length - 1) {
       const nextQuestion = questions[currentIndex + 1];
-      const db = getDatabase();
+      const db = database;
       set(ref(db, "quiz/current_question"), nextQuestion);
       setShowAnswer(false); // Reset showAnswer to false
       handleToggleShowAnswer(false); // Reset showAnswer status in Firebase
@@ -110,7 +110,7 @@ const AdminQuizControlPage = () => {
     const currentIndex = questions.indexOf(currentQuestion);
     if (currentIndex > 0) {
       const previousQuestion = questions[currentIndex - 1];
-      const db = getDatabase();
+      const db = database;
       set(ref(db, "quiz/current_question"), previousQuestion);
       handleToggleShowAnswer(false); // Reset showAnswer status in Firebase
 
@@ -120,7 +120,7 @@ const AdminQuizControlPage = () => {
   };
 
   const handleResetQuiz = () => {
-    const db = getDatabase();
+    const db = database;
     if (questions.length > 0) {
       const firstQuestionId = questions[0];
 
@@ -162,7 +162,7 @@ const AdminQuizControlPage = () => {
   };
 
   const handleRemoveAllUsers = () => {
-    const db = getDatabase();
+    const db = database;
     const usersRef = ref(db, "users");
     set(usersRef, null)
       .then(() => {
@@ -175,7 +175,7 @@ const AdminQuizControlPage = () => {
   };
 
   const handleToggleShowAnswer = (val) => {
-    const db = getDatabase();
+    const db = database;
     const newShowAnswer = val;
     setShowAnswer(newShowAnswer);
     set(ref(db, "quiz/showAnswer"), newShowAnswer);

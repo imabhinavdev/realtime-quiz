@@ -27,7 +27,7 @@ const ControlPage = () => {
   }, []);
 
   const handleDeleteQuestion = (questionId) => {
-    const db = getDatabase();
+    const db = database;
     const questionRef = ref(db, `quiz/questions/${questionId}`);
 
     // Remove the question data from the database

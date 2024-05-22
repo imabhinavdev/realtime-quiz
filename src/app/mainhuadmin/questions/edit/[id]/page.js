@@ -115,7 +115,7 @@ const EditQuestions = () => {
       updatedAt: new Date().getTime(),
     };
 
-    const db = getDatabase();
+    const db = database;
     set(ref(db, `quiz/questions/${questionId}`), constructedQuestionData)
       .then(() => {
         toast.success("Question updated successfully!");
