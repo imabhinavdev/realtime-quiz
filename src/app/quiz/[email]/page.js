@@ -214,8 +214,8 @@ const QuizApp = ({ params }) => {
 
   if (!quizActive) {
     return (
-      <div className="text-red-600 text-xl">
-        <p>The quiz is not active at the moment or has been ended!</p>
+      <div className="text-black text-xl">
+        <p>Please wait until the quiz start. Kindly do not refresh the page.</p>
         <p>Your email is {email}</p>
       </div>
     );
