@@ -148,7 +148,6 @@ const AdminQuizControlPage = () => {
         const userRef = ref(db, `users/${user.id}`);
         update(userRef, { score: 0 })
           .then(() => {
-            console.log(`Score reset for user ${user.id}`);
           })
           .catch((error) => {
             console.error(`Error resetting score for user ${user.id}:`, error);

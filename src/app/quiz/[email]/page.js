@@ -122,7 +122,6 @@ const QuizApp = ({ params }) => {
             setBtnActive(true);
             setTimeLeft(questionData.timer || 10); // Set timer dynamically
           } else {
-            console.log("No data available");
           }
         })
         .catch((error) => {
@@ -197,7 +196,6 @@ const QuizApp = ({ params }) => {
         const updatedCount = count + 1; // Increase count by 1
         set(optionSelectedCountRef, updatedCount) // Set the count directly in the database
           .then(() => {
-            console.log("Option selected count updated successfully.");
           })
           .catch((error) => {
             console.error("Error updating option selected count:", error);
