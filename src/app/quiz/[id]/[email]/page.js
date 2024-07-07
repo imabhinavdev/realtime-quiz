@@ -13,6 +13,7 @@ import database from "@/firebase/config";
 
 const QuizApp = ({ params }) => {
   const email = decodeURIComponent(params.email);
+  const id=params.id;
   const [questions, setQuestions] = useState({});
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");
@@ -39,9 +40,9 @@ const QuizApp = ({ params }) => {
 
   useEffect(() => {
     const db = database;
-    const quizActiveRef = ref(db, "quiz/quiz_active");
-    const currentQuestionRef = ref(db, "quiz/current_question");
-    const showAnswerRef = ref(db, "quiz/showAnswer");
+    const quizActiveRef = ref(db, `${id}/active`);
+    const currentQuestionRef = ref(db, `${id}/current_question`);
+    const showAnswerRef = ref(db, `${id}/showAnswer`);
 
     const unsubscribeShowAnswer = onValue(
       showAnswerRef,
@@ -86,7 +87,7 @@ const QuizApp = ({ params }) => {
   useEffect(() => {
     if (quizActive && currentQuestion != null) {
       const db = database;
-      const currentQuestionRef = ref(db, `quiz/questions/${currentQuestion}`);
+      const currentQuestionRef = ref(db, `${id}/questions/${currentQuestion}`);
       get(currentQuestionRef)
         .then((snapshot) => {
           const data = snapshot.val();
@@ -113,7 +114,7 @@ const QuizApp = ({ params }) => {
     if (quizActive && currentQuestion !== null) {
       const db = database;
       const dbRef = ref(db);
-      get(child(dbRef, `quiz/questions/${currentQuestion}`))
+      get(child(dbRef, `${id}/questions/${currentQuestion}`))
         .then((snapshot) => {
           if (snapshot.exists()) {
             const questionData = snapshot.val();
@@ -188,7 +189,7 @@ const QuizApp = ({ params }) => {
     const db = database;
     const optionSelectedCountRef = ref(
       db,
-      `quiz/questions/${questionId}/${selectedOption}SelectedCount`
+      `${id}/questions/${questionId}/${selectedOption}SelectedCount`
     );
     get(optionSelectedCountRef)
       .then((snapshot) => {
