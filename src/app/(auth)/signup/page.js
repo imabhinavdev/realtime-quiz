@@ -3,7 +3,8 @@
 import { EyeCloseIcon, EyeIcon } from '@/utils/Icon'
 import Link from 'next/link'
 import React, { useState, useRef, useContext } from 'react'
-import { toast, ToastContainer } from 'react-toastify/dist/components'
+import { ToastContainer, toast } from "react-toastify";
+
 import 'react-toastify/dist/ReactToastify.css'
 import { UserContext } from '@/context/UserContext'
 import axios from 'axios'

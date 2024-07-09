@@ -8,7 +8,7 @@ const HomePage = () => {
         title="Take Quiz"
         desc="This is a quiz app where you can take a quiz and test your knowledge."
         btn="Start quiz"
-        link="/quiz"
+        link="/login"
       />
     </div>
   );
