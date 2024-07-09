@@ -21,7 +21,7 @@ const QuizRegister = () => {
     const encodedEmail = encodeEmail(email);
 
     try {
-      const userRef = ref(db, `users/${encodedEmail}`);
+      const userRef = ref(db, `${id}/users/${encodedEmail}`);
       const snapshot = await get(userRef);
 
       if (snapshot.exists()) {

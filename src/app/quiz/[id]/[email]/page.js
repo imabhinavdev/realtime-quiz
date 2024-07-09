@@ -172,7 +172,7 @@ const QuizApp = ({ params }) => {
   const updateScore = (email) => {
     const db = database;
     email = encodeEmail(email);
-    const userScoreRef = ref(db, `users/${email}`);
+    const userScoreRef = ref(db, `${id}/users/${email}`);
     get(userScoreRef)
       .then((snapshot) => {
         const userData = snapshot.val();
