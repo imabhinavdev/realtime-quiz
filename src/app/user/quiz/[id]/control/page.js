@@ -7,7 +7,8 @@ import { ToastContainer, toast } from "react-toastify";
 import ResetScore from "@/components/ResetScore";
 import { useParams } from "next/navigation";
 const AdminQuizControlPage = () => {
-    const { quizId } = useParams();
+    const { id } = useParams();
+    const quizId = id
     const [quizActive, setQuizActive] = useState(false);
     const [currentQuestion, setCurrentQuestion] = useState("");
     const [questions, setQuestions] = useState([]);

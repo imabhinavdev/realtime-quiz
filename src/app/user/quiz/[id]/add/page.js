@@ -5,6 +5,7 @@ import database from "@/firebase/config";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useParams, useRouter } from "next/navigation";
+import axios from "axios";
 
 const AddQuestions = () => {
   const { id } = useParams();
@@ -43,62 +44,19 @@ const AddQuestions = () => {
       return;
     }
 
-    const db = database;
-    const questionNoRef = ref(db, `${quizId}/question_no`);
-
-    // Fetch current question number
-    get(questionNoRef)
-      .then((snapshot) => {
-        let currentQuestionNo = snapshot.val() || 0;
-
-        // Format question number to always have five digits
-        const formattedQuestionNo = String(currentQuestionNo).padStart(5, "0");
-
-        let time = new Date().getTime();
-        // Construct the questionData object
-        let constructedQuestionData = {
-          text: questionData.text,
-          optionA: questionData.optionA,
-          optionB: questionData.optionB,
-          optionC: questionData.optionC,
-          optionD: questionData.optionD,
-          correct: questionData.correct,
-          timer: questionData.timer, // Include timer value
-          createdAt: time,
-        };
-
-        // Replace spaces and question marks with underscores
-        const replacedText = questionData.text.replace(/[\s?]/g, "_");
-        const questionId = `${formattedQuestionNo}_${replacedText}`;
-
-        // Update question number in Firebase
-        set(questionNoRef, currentQuestionNo + 1);
-
-        // Store the new question with the updated question number
-        set(ref(db, `${quizId}/questions/${questionId}`), constructedQuestionData)
-          .then(() => {
-            toast.success("Question added successfully!");
-            setTimeout(() => {
-              router.push(`/user/quiz/${quizId}`);
-            }, 1500);
-            setQuestionData({
-              text: "",
-              optionA: "",
-              optionB: "",
-              optionC: "",
-              optionD: "",
-              correct: "",
-              timer: 10, // Reset timer value after submission
-            });
-          })
-          .catch((error) => {
-            toast.error("Failed to add question. Please try again.");
-            console.error("Error adding question: ", error);
-          });
-      })
-      .catch((error) => {
-        console.error("Error fetching question number: ", error);
+    // Add the question to the database
+    const postData = async () => {
+      const resp = await axios.post(`/api/questions?id=${quizId}`, questionData).then((res) => {
+        toast.success("Question added successfully");
+        router.push(`/user/quiz/${quizId}`);
+      }
+      ).catch((error) => {
+        toast.error("Error adding question");
       });
+
+
+    }
+    postData();
   };
 
   const handleOptionChange = (e) => {

@@ -10,10 +10,11 @@ import {
   set,
 } from "firebase/database";
 import database from "@/firebase/config";
+import { useParams } from "next/navigation";
 
 const QuizApp = ({ params }) => {
   const email = decodeURIComponent(params.email);
-  const id=params.id;
+  const { id } = useParams();
   const [questions, setQuestions] = useState({});
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");
@@ -40,7 +41,7 @@ const QuizApp = ({ params }) => {
 
   useEffect(() => {
     const db = database;
-    const quizActiveRef = ref(db, `${id}/active`);
+    const quizActiveRef = ref(db, `${id}/quiz_active`);
     const currentQuestionRef = ref(db, `${id}/current_question`);
     const showAnswerRef = ref(db, `${id}/showAnswer`);
 
@@ -252,13 +253,12 @@ const QuizApp = ({ params }) => {
               <legend className="sr-only">s</legend>
               {questions.optionA && (
                 <div
-                  className={`flex items-center mb-4 rounded-lg p-2 ${
-                    showAnswer && questions.correct === "optionA"
+                  className={`flex items-center mb-4 rounded-lg p-2 ${showAnswer && questions.correct === "optionA"
                       ? "bg-green-400"
                       : showAnswer && selectedAnswer === "optionA"
-                      ? "bg-red-400"
-                      : ""
-                  }`}
+                        ? "bg-red-400"
+                        : ""
+                    }`}
                 >
                   <input
                     id="optionA"
@@ -288,13 +288,12 @@ const QuizApp = ({ params }) => {
 
               {questions.optionB && (
                 <div
-                  className={`flex items-center mb-4 rounded-lg p-2 ${
-                    showAnswer && questions.correct === "optionB"
+                  className={`flex items-center mb-4 rounded-lg p-2 ${showAnswer && questions.correct === "optionB"
                       ? "bg-green-400"
                       : showAnswer && selectedAnswer === "optionB"
-                      ? "bg-red-400"
-                      : ""
-                  }`}
+                        ? "bg-red-400"
+                        : ""
+                    }`}
                 >
                   <input
                     id="optionB"
@@ -324,13 +323,12 @@ const QuizApp = ({ params }) => {
 
               {questions.optionC && (
                 <div
-                  className={`flex items-center mb-4 rounded-lg p-2 ${
-                    showAnswer && questions.correct === "optionC"
+                  className={`flex items-center mb-4 rounded-lg p-2 ${showAnswer && questions.correct === "optionC"
                       ? "bg-green-400"
                       : showAnswer && selectedAnswer === "optionC"
-                      ? "bg-red-400"
-                      : ""
-                  }`}
+                        ? "bg-red-400"
+                        : ""
+                    }`}
                 >
                   <input
                     id="optionC"
@@ -360,13 +358,12 @@ const QuizApp = ({ params }) => {
 
               {questions.optionD && (
                 <div
-                  className={`flex items-center mb-4 rounded-lg p-2 ${
-                    showAnswer && questions.correct === "optionD"
+                  className={`flex items-center mb-4 rounded-lg p-2 ${showAnswer && questions.correct === "optionD"
                       ? "bg-green-400"
                       : showAnswer && selectedAnswer === "optionD"
-                      ? "bg-red-400"
-                      : ""
-                  }`}
+                        ? "bg-red-400"
+                        : ""
+                    }`}
                 >
                   <input
                     id="optionD"
@@ -397,11 +394,10 @@ const QuizApp = ({ params }) => {
             <button
               type="submit"
               disabled={!btnActive || selectedAnswer.length === 0}
-              className={`w-full p-2 text-white rounded-md ${
-                !btnActive || selectedAnswer.length === 0
+              className={`w-full p-2 text-white rounded-md ${!btnActive || selectedAnswer.length === 0
                   ? "bg-green-300"
                   : "bg-green-500"
-              }`}
+                }`}
             >
               Submit Answer
             </button>

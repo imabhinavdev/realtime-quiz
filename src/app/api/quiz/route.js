@@ -156,8 +156,9 @@ export async function DELETE(req) {
     await QuizModel.findByIdAndDelete(id);
 
     // Delete from Firebase
-    const firebaseDocRef = database.collection('').doc(id);
-    await firebaseDocRef.delete();
+    const firebaseRef = ref(database, `${id}/`);
+    await set(firebaseRef, null);
+
 
     return NextResponse.json({ message: "Quiz deleted successfully" });
   } catch (error) {

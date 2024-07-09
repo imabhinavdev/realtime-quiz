@@ -27,12 +27,12 @@ const QuizRegister = () => {
 
       if (snapshot.exists()) {
         toast.info("Email is already registered.");
-        router.push(`/${id}/quiz/${email}`);
+        router.push(`/quiz/${id}/${email}`);
       } else {
         await set(userRef, { name: name, score: 0 });
         toast.success("Registered successfully!");
         setTimeout(() => {
-          router.push(`/${id}/quiz/${encodedEmail}`);
+          router.push(`/quiz/${id}/${encodedEmail}`);
         }, 1500);
       }
     } catch (error) {

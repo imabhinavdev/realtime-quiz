@@ -6,6 +6,7 @@ import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 const AddQuiz = () => {
     const user = localStorage.getItem('user');
+    const router = useRouter();
     const nameRef = useRef(null);
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -26,19 +27,22 @@ const AddQuiz = () => {
 
     }
     return (
-        <div className='w-full '>
-            <h1 className='text-2xl font-semibold'>Create New Quiz</h1>
-            <form className='mt-4' onSubmit={handleSubmit}>
-                <div className='flex flex-col'>
-                    <label htmlFor='name' className='text-sm'>Quiz Name</label>
-                    <input type='text' name='name' ref={nameRef} className='border border-gray-300 rounded-md p-2 mt-1' />
-                </div>
-                <div className='mt-4'>
-                    <button type='submit' className='bg-blue-500 text-white px-3 py-1 rounded-md'>Create Quiz</button>
-                </div>
-            </form>
+        <>
+            <ToastContainer />
+            <div className='w-full '>
+                <h1 className='text-2xl font-semibold'>Create New Quiz</h1>
+                <form className='mt-4' onSubmit={handleSubmit}>
+                    <div className='flex flex-col'>
+                        <label htmlFor='name' className='text-sm'>Quiz Name</label>
+                        <input type='text' name='name' ref={nameRef} className='border border-gray-300 rounded-md p-2 mt-1' />
+                    </div>
+                    <div className='mt-4'>
+                        <button type='submit' className='bg-blue-500 text-white px-3 py-1 rounded-md'>Create Quiz</button>
+                    </div>
+                </form>
 
-        </div>
+            </div>
+        </>
     )
 }
 
