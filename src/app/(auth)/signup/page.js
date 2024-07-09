@@ -2,13 +2,15 @@
 
 import { EyeCloseIcon, EyeIcon } from '@/utils/Icon'
 import Link from 'next/link'
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useContext } from 'react'
 import { toast, ToastContainer } from 'react-toastify/dist/components'
 import 'react-toastify/dist/ReactToastify.css'
+import { UserContext } from '@/context/UserContext'
 import axios from 'axios'
 
 const Signup = () => {
 
+    const { user, setUser } = useContext(UserContext);
 
     const [showPassword, setShowPassword] = useState(false)
 
@@ -36,6 +38,8 @@ const Signup = () => {
 
                 if (response.data.success) {
                     toast.success(response.data.message)
+                    localStorage.setItem('user', JSON.stringify(response.data.user))
+                    setUser(response.data.user)
                 } else {
                     toast.error(response.data.message)
                 }

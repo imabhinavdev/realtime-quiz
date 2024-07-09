@@ -30,7 +30,8 @@ export async function POST(request) {
         // refresh token
         user.password = undefined;
         const refreshToken = user.generateRefreshToken();
-        const res = NextResponse.json({ user, token, refreshToken });
+        const message = "Signup successful";
+        const res = NextResponse.json({ user, token, refreshToken ,message});
 
         const options = {
             httpOnly: true,

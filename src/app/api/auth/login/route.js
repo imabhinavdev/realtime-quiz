@@ -30,7 +30,9 @@ export async function POST(request) {
         // Generate an auth token
         const token = existingUser.generateAuthToken();
         const refreshToken = existingUser.generateRefreshToken();
-        const res = NextResponse.json({ user: existingUser, token, refreshToken });
+        const message = "Login successful";
+        existingUser.password = undefined
+        const res = NextResponse.json({ user: existingUser, token, refreshToken, message });
 
         const options = {
             httpOnly: true,

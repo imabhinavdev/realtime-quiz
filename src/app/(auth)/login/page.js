@@ -1,13 +1,17 @@
 "use client"
 import Link from 'next/link'
-import React, { useRef } from 'react'
+import React, { useRef, useContext } from 'react'
 import axios from 'axios'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-const page = () => {
+import { useRouter } from 'next/navigation'
+import { UserContext } from '@/context/UserContext'
 
+const LoginPage = () => {
+    const { user, setUser } = useContext(UserContext)
     const emailRef = useRef(null)
     const passwordRef = useRef(null)
+    const router = useRouter()
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -15,25 +19,26 @@ const page = () => {
         const password = passwordRef.current.value
 
         const submitLogin = async () => {
-            try {
-                const response = await axios.post('/api/auth/login', {
-                    email,
-                    password
-                })
-
-                if (response.data.success) {
-                    toast.success(response.data.message)
-                } else {
-                    toast.error(response.data.message)
+            const respone = await axios.post('/api/auth/login', {
+                email,
+                password
+            }).then((res) => {
+                if (res.data.status !== 400) {
+                    setUser(res.data)
+                    localStorage.setItem('user', JSON.stringify(res.data))
+                    router.push('/user/dashboard')
                 }
-            } catch (error) {
-                console.error(error)
-            }
+                else {
+                    toast.error(res.data.error)
+                }
+            }).catch((err) => {
+                console.log(err)
+                toast.error(err)
+            })
         }
 
         submitLogin()
     }
-
 
     return (
         <>
@@ -45,10 +50,7 @@ const page = () => {
                             <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">Log in to your account</h3>
                         </div>
                     </div>
-                    <form
-                        className="space-y-5"
-                        onSubmit={handleSubmit}
-                    >
+                    <form className="space-y-5" onSubmit={handleSubmit}>
                         <div>
                             <label className="font-medium">
                                 Email
@@ -90,11 +92,11 @@ const page = () => {
                         </button>
                     </form>
 
-                    <p className="text-center">Don't have an account? <Link href="/signup " className="font-medium text-indigo-600 hover:text-indigo-500">Sign up</Link></p>
+                    <p className="text-center">Don't have an account? <Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">Sign up</Link></p>
                 </div>
             </main>
         </>
     )
 }
 
-export default page
+export default LoginPage

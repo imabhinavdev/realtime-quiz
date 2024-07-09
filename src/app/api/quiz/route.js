@@ -73,10 +73,15 @@ export async function GET(request) {
 export async function PATCH(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
+  const admin = searchParams.get('admin');
   await db();
 
   if (!id) {
     return NextResponse.json({ message: "Id is required" }, { status: 400 });
+  }
+
+  if (!admin) {
+    return NextResponse.json({ message: "Admin is required" }, { status: 400 });
   }
 
   try {
@@ -92,6 +97,16 @@ export async function PATCH(req) {
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ message: "No fields to update" }, { status: 400 });
     }
+
+    // Check if the admin id matches the quiz admin id
+    const quiz = await QuizModel.findById(id);
+    if (!quiz) {
+      return NextResponse.json({ message: "Quiz not found" }, { status: 404 });
+    }
+    if (admin && String(quiz.admin) !== admin) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
 
     const updatedUser = await QuizModel.findByIdAndUpdate(id, updateData, { new: true });
     if (!updatedUser) {
@@ -109,20 +124,20 @@ export async function PATCH(req) {
 export async function DELETE(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
-  if(!id){
-    return NextResponse.json({message:"Id is required"},{status:400});
+  if (!id) {
+    return NextResponse.json({ message: "Id is required" }, { status: 400 });
   }
   await db();
-  try{
-    const quiz=await QuizModel.findByIdAndDelete(id);
-    if(!quiz){
-      return NextResponse.json({message:"Quiz not found"},{status:404});
+  try {
+    const quiz = await QuizModel.findByIdAndDelete(id);
+    if (!quiz) {
+      return NextResponse.json({ message: "Quiz not found" }, { status: 404 });
     }
-    return NextResponse.json({message:"Quiz deleted successfully"});
+    return NextResponse.json({ message: "Quiz deleted successfully" });
 
   }
-  catch(err){
+  catch (err) {
     console.error(err);
-    return NextResponse.json({error:"An error occurred",message:err.message},{status:500});
+    return NextResponse.json({ error: "An error occurred", message: err.message }, { status: 500 });
   }
 }

@@ -3,12 +3,15 @@ import jwt from 'jsonwebtoken';
 export function middleware(request) {
   const path = request.nextUrl.pathname;
 
+  if (path.startsWith('/_next')) {
+    return NextResponse.next();
+  }
   // Handle signup and login paths
   if (path === "/signup" || path === "/login") {
     const authToken = request.cookies.get('authToken');
     const refreshToken = request.cookies.get('refreshToken');
     if (authToken) {
-      return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
+      return NextResponse.redirect(new URL("/user/dashboard", request.nextUrl));
     } else {
       return NextResponse.next();
     }
@@ -16,13 +19,7 @@ export function middleware(request) {
 
   // Handle logout
 
-  if (path === "/logout") {
-    // clear cookies
-    const res = NextResponse.redirect(new URL("/login", request.nextUrl));
-    res.cookies.set("authToken", "", { maxAge: 0 });
-    res.cookies.set("refreshToken", "", { maxAge: 0 });
-    return res;
-  }
+
 
   // Handle dashboard
   if (path.startsWith("/user")) {
@@ -49,5 +46,5 @@ export function middleware(request) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/signup", "/login", "/dashboard", "/logout", "/user/:path*"]
+  matcher: ["/signup", "/login", "/dashboard", "/logout", "/user/:path*", "/_next/:path*"]
 };
