@@ -20,7 +20,13 @@ import { QuizModel } from "@/models/QuizModel";
 
 export async function POST(req) {
   try {
-    const { name, admin } = await req.json();
+    const { searchParams } = new URL(req.url);
+    const admin = searchParams.get('admin');
+
+    if (!admin) {
+      return NextResponse.json({ message: "Admin is required" });
+    }
+    const { name } = await req.json();
 
     if (!name) {
       return NextResponse.json({ message: "Name is required" });
@@ -121,23 +127,40 @@ export async function PATCH(req) {
 }
 
 
+//Delete a quiz by id also from database and firebase
+
 export async function DELETE(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
+  const admin = searchParams.get('admin');
+  await db();
+
   if (!id) {
     return NextResponse.json({ message: "Id is required" }, { status: 400 });
   }
-  await db();
+
+  if (!admin) {
+    return NextResponse.json({ message: "Admin is required" }, { status: 400 });
+  }
+
   try {
-    const quiz = await QuizModel.findByIdAndDelete(id);
+    const quiz = await QuizModel.findById(id);
     if (!quiz) {
       return NextResponse.json({ message: "Quiz not found" }, { status: 404 });
     }
-    return NextResponse.json({ message: "Quiz deleted successfully" });
+    if (admin && String(quiz.admin) !== admin) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-  }
-  catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "An error occurred", message: err.message }, { status: 500 });
+    // Delete from MongoDB
+    await QuizModel.findByIdAndDelete(id);
+
+    // Delete from Firebase
+    const firebaseDocRef = database.collection('').doc(id);
+    await firebaseDocRef.delete();
+
+    return NextResponse.json({ message: "Quiz deleted successfully" });
+  } catch (error) {
+    return NextResponse.json({ message: error.message, error: error.code });
   }
 }

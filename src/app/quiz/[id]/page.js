@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { getDatabase, ref, set, get } from "firebase/database";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import database from "@/firebase/config"; // Adjust the path as necessary
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,6 +10,7 @@ const QuizRegister = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const router = useRouter();
+  const { id } = useParams();
 
   const encodeEmail = (email) => {
     return email.replace(/\./g, "%2E");
@@ -26,12 +27,12 @@ const QuizRegister = () => {
 
       if (snapshot.exists()) {
         toast.info("Email is already registered.");
-        router.push(`/quiz/${email}`);
+        router.push(`/${id}/quiz/${email}`);
       } else {
         await set(userRef, { name: name, score: 0 });
         toast.success("Registered successfully!");
         setTimeout(() => {
-          router.push(`/quiz/${encodedEmail}`);
+          router.push(`/${id}/quiz/${encodedEmail}`);
         }, 1500);
       }
     } catch (error) {

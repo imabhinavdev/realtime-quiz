@@ -4,9 +4,11 @@ import { getDatabase, ref, set, get } from "firebase/database";
 import database from "@/firebase/config";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 const AddQuestions = () => {
+  const { id } = useParams();
+  const quizId = id;
   const [questionData, setQuestionData] = useState({
     text: "",
     optionA: "",
@@ -42,7 +44,7 @@ const AddQuestions = () => {
     }
 
     const db = database;
-    const questionNoRef = ref(db, "quiz/question_no");
+    const questionNoRef = ref(db, `${quizId}/question_no`);
 
     // Fetch current question number
     get(questionNoRef)
@@ -73,11 +75,11 @@ const AddQuestions = () => {
         set(questionNoRef, currentQuestionNo + 1);
 
         // Store the new question with the updated question number
-        set(ref(db, `quiz/questions/${questionId}`), constructedQuestionData)
+        set(ref(db, `${quizId}/questions/${questionId}`), constructedQuestionData)
           .then(() => {
             toast.success("Question added successfully!");
             setTimeout(() => {
-              router.push("/mainhuadmin/questions");
+              router.push(`/user/quiz/${quizId}`);
             }, 1500);
             setQuestionData({
               text: "",

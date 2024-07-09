@@ -23,10 +23,10 @@ const LoginPage = () => {
                 email,
                 password
             }).then((res) => {
-                if (res.data.status !== 400) {
+                if (res.data.token) {
                     setUser(res.data)
                     localStorage.setItem('user', JSON.stringify(res.data))
-                    router.push('/user/dashboard')
+                    window.location.reload()
                 }
                 else {
                     toast.error(res.data.error)

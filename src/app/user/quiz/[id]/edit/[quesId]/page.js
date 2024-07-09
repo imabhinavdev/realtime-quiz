@@ -8,10 +8,12 @@ import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 
 const EditQuestions = () => {
-  let { id } = useParams(); // Assuming you have set up routing to pass `id` as a parameter
-  id = decodeURIComponent(id);
+  let { quesId } = useParams(); // Assuming you have set up routing to pass `quesId` as a parameter
+  let { id } = useParams();
+  const quizId = id;
+  quesId = decodeURIComponent(quesId);
 
-  const questionId = decodeURIComponent(id);
+  const questionId = decodeURIComponent(quesId);
   const [questionData, setQuestionData] = useState({
     text: "",
     correct: "",
@@ -27,7 +29,7 @@ const EditQuestions = () => {
 
   useEffect(() => {
     const db = database;
-    const questionRef = ref(db, `/quiz/questions/${questionId}`);
+    const questionRef = ref(db, `/${quizId}/questions/${questionId}`);
 
     get(questionRef)
       .then((snapshot) => {
@@ -116,11 +118,11 @@ const EditQuestions = () => {
     };
 
     const db = database;
-    set(ref(db, `quiz/questions/${questionId}`), constructedQuestionData)
+    set(ref(db, `${quizId}/questions/${questionId}`), constructedQuestionData)
       .then(() => {
         toast.success("Question updated successfully!");
         setTimeout(() => {
-          router.push("/mainhuadmin/questions");
+          router.push(`/user/quiz/${quizId}`);
         }, 1500);
       })
       .catch((error) => {

@@ -15,7 +15,9 @@ const NavBar = () => {
     await axios.post("/api/auth/logout").then(() => {
       setUser(null);
       localStorage.removeItem('user');
-      router.push("/login");
+      // reload window using window.location.reload()
+      window.location.reload();
+
     }).catch((err) => {
       toast.error("Failed to logout");
     });
@@ -29,6 +31,8 @@ const NavBar = () => {
 
   // Replace   paths with your paths
   const navigation = [
+    { title: "Home", path: "/" },
+    { title: "Dashboard", path: "/user/dashboard" },
   ];
 
   useEffect(() => {

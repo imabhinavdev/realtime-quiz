@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import ResetScore from "@/components/ResetScore";
 
 const AdminQuizControlPage = () => {
+  const { quizId } = useParams();
   const [quizActive, setQuizActive] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState("");
   const [questions, setQuestions] = useState([]);
@@ -17,14 +18,14 @@ const AdminQuizControlPage = () => {
     const db = database;
 
     // Fetch quiz_active status from Firebase
-    const quizActiveRef = ref(db, "quiz/quiz_active");
+    const quizActiveRef = ref(db, `${quizId}/quiz_active`);
     const unsubscribeQuizActive = onValue(quizActiveRef, (snapshot) => {
       const data = snapshot.val();
       setQuizActive(data);
     });
 
     // Fetch current_question from Firebase
-    const currentQuestionRef = ref(db, "quiz/current_question");
+    const currentQuestionRef = ref(db, `${quizId}/current_question`);
     const unsubscribeCurrentQuestion = onValue(
       currentQuestionRef,
       (snapshot) => {
@@ -34,14 +35,14 @@ const AdminQuizControlPage = () => {
     );
 
     // Fetch showAnswer status from Firebase
-    const showAnswerRef = ref(db, "quiz/showAnswer");
+    const showAnswerRef = ref(db, `${quizId}/showAnswer`);
     const unsubscribeShowAnswer = onValue(showAnswerRef, (snapshot) => {
       const data = snapshot.val();
       setShowAnswer(data);
     });
 
     // Fetch all questions from Firebase
-    const questionsRef = ref(db, "quiz/questions");
+    const questionsRef = ref(db, `${quizId}/questions`);
     get(questionsRef)
       .then((snapshot) => {
         if (snapshot.exists()) {
@@ -56,7 +57,7 @@ const AdminQuizControlPage = () => {
       });
 
     // Fetch all users from Firebase
-    const usersRef = ref(db, "users");
+    const usersRef = ref(db, `${quizId}/users`);
     const unsubscribeUsers = onValue(usersRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
@@ -81,14 +82,14 @@ const AdminQuizControlPage = () => {
 
   const handleStartQuiz = () => {
     const db = database;
-    set(ref(db, "quiz/quiz_active"), true);
+    set(ref(db, `${quizId}/quiz_active`), true);
     toast.success("Quiz started successfully");
     handleToggleShowAnswer(false); // Reset showAnswer status in Firebase
   };
 
   const handleStopQuiz = () => {
     const db = database;
-    set(ref(db, "quiz/quiz_active"), false);
+    set(ref(db, `${quizId}/quiz_active`), false);
     toast.success("Quiz stopped successfully");
     handleToggleShowAnswer(false); // Reset showAnswer status in Firebase
   };
@@ -98,7 +99,7 @@ const AdminQuizControlPage = () => {
     if (currentIndex < questions.length - 1) {
       const nextQuestion = questions[currentIndex + 1];
       const db = database;
-      set(ref(db, "quiz/current_question"), nextQuestion);
+      set(ref(db, `${quizId}/current_question`), nextQuestion);
       setShowAnswer(false); // Reset showAnswer to false
       handleToggleShowAnswer(false); // Reset showAnswer status in Firebase
 
@@ -111,7 +112,7 @@ const AdminQuizControlPage = () => {
     if (currentIndex > 0) {
       const previousQuestion = questions[currentIndex - 1];
       const db = database;
-      set(ref(db, "quiz/current_question"), previousQuestion);
+      set(ref(db, `${quizId}/current_question`), previousQuestion);
       handleToggleShowAnswer(false); // Reset showAnswer status in Firebase
 
       setShowAnswer(false); // Reset showAnswer to false
@@ -125,7 +126,7 @@ const AdminQuizControlPage = () => {
       const firstQuestionId = questions[0];
 
       // Reset current question
-      set(ref(db, "quiz/current_question"), firstQuestionId);
+      set(ref(db, `${quizId}/current_question`), firstQuestionId);
 
       // Reset showAnswer status
       setShowAnswer(false);
@@ -133,7 +134,7 @@ const AdminQuizControlPage = () => {
 
       // Reset counts of options selected to 0 for all questions
       questions.forEach((questionId) => {
-        const optionSelectedCountRef = ref(db, `quiz/questions/${questionId}`);
+        const optionSelectedCountRef = ref(db, `${quizId}/questions/${questionId}`);
         const dataToUpdate = {
           optionASelectedCount: 0,
           optionBSelectedCount: 0,
@@ -145,7 +146,7 @@ const AdminQuizControlPage = () => {
 
       // Reset scores of all users to 0
       users.forEach((user) => {
-        const userRef = ref(db, `users/${user.id}`);
+        const userRef = ref(db, `${quizId}/users/${user.id}`);
         update(userRef, { score: 0 })
           .then(() => {
           })
@@ -177,7 +178,7 @@ const AdminQuizControlPage = () => {
     const db = database;
     const newShowAnswer = val;
     setShowAnswer(newShowAnswer);
-    set(ref(db, "quiz/showAnswer"), newShowAnswer);
+    set(ref(db, `${quizId}/showAnswer`), newShowAnswer);
   };
 
   return (
@@ -191,27 +192,24 @@ const AdminQuizControlPage = () => {
         </p>
         <div className="grid gap-4 md:grid-cols-5 grid-cols-2">
           <button
-            className={`bg-red-500 text-white px-4 py-2 rounded-lg ${
-              !quizActive ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`bg-red-500 text-white px-4 py-2 rounded-lg ${!quizActive ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             onClick={handleStopQuiz}
             disabled={!quizActive}
           >
             Stop Quiz
           </button>
           <button
-            className={`bg-green-500 text-white px-4 py-2 rounded-lg ${
-              quizActive ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`bg-green-500 text-white px-4 py-2 rounded-lg ${quizActive ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             onClick={handleStartQuiz}
             disabled={quizActive}
           >
             Start Quiz
           </button>
           <button
-            className={`bg-gray-500 text-white px-4 py-2 rounded-lg ${
-              quizActive ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`bg-gray-500 text-white px-4 py-2 rounded-lg ${quizActive ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             onClick={handleResetQuiz}
             disabled={quizActive}
           >
@@ -227,9 +225,8 @@ const AdminQuizControlPage = () => {
             {showAnswer ? "Hide Answers" : "Show Answers"}
           </button>
           <button
-            className={`bg-red-600 text-white px-4 py-2 rounded-lg ${
-              quizActive ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`bg-red-600 text-white px-4 py-2 rounded-lg ${quizActive ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             onClick={handleRemoveAllUsers}
             disabled={quizActive}
           >
@@ -238,23 +235,21 @@ const AdminQuizControlPage = () => {
         </div>
         <div className="flex gap-4 w-full">
           <button
-            className={`bg-blue-600 text-white px-4 py-2 rounded-lg w-1/2 ${
-              !quizActive || questions.indexOf(currentQuestion) === 0
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            }`}
+            className={`bg-blue-600 text-white px-4 py-2 rounded-lg w-1/2 ${!quizActive || questions.indexOf(currentQuestion) === 0
+              ? "opacity-50 cursor-not-allowed"
+              : ""
+              }`}
             onClick={handlePreviousQuestion}
             disabled={!quizActive || questions.indexOf(currentQuestion) === 0}
           >
             Previous Question
           </button>
           <button
-            className={`bg-blue-600 text-white px-4 py-2 rounded-lg w-1/2 ${
-              !quizActive ||
+            className={`bg-blue-600 text-white px-4 py-2 rounded-lg w-1/2 ${!quizActive ||
               questions.indexOf(currentQuestion) === questions.length - 1
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            }`}
+              ? "opacity-50 cursor-not-allowed"
+              : ""
+              }`}
             onClick={handleNextQuestion}
             disabled={
               !quizActive ||
