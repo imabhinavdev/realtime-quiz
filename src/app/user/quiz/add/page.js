@@ -13,7 +13,8 @@ const AddQuiz = () => {
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            const tempUser = JSON.parse(storedUser);
+            setUser(tempUser.user);
         }
     }, []);
 
