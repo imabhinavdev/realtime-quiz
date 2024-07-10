@@ -8,12 +8,14 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
 import { UserContext } from '@/context/UserContext'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 
 const Signup = () => {
 
     const { user, setUser } = useContext(UserContext);
 
     const [showPassword, setShowPassword] = useState(false)
+    const router = useRouter()
 
     const togglePassword = () => {
         setShowPassword(!showPassword)
@@ -37,10 +39,11 @@ const Signup = () => {
                     name
                 })
 
-                if (response.data.success) {
-                    toast.success(response.data.message)
+                if (response.data) {
+                    toast.success(response.data)
                     localStorage.setItem('user', JSON.stringify(response.data.user))
                     setUser(response.data.user)
+                    router.push('/user/dashboard')
                 } else {
                     toast.error(response.data.message)
                 }
