@@ -65,7 +65,7 @@ const UserQuiz = () => {
                                 <div key={index} className="bg-white shadow-md p-4 rounded-lg">
                                     <h4 className="text-lg font-semibold">{quiz.name}</h4>
                                     <Link href={`/quiz/${quiz._id}/`} className="text-sm line-clamp-1 text-gray-500">
-                                        http://localhost:3000/quiz/{quiz._id}/
+                                        https://quiz.imabhinav.dev/quiz/{quiz._id}/
                                     </Link>
                                     <div className="mt-4">
                                         <Link href={`/user/quiz/${quiz._id}`} className="bg-blue-500 text-white px-3 py-1 rounded-full">
