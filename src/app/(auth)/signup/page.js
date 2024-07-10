@@ -43,7 +43,7 @@ const Signup = () => {
                     toast.success(response.data)
                     localStorage.setItem('user', JSON.stringify(response.data.user))
                     setUser(response.data.user)
-                    router.push('/user/dashboard')
+                    window.location.reload()
                 } else {
                     toast.error(response.data.message)
                 }
