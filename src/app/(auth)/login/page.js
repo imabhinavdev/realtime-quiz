@@ -1,6 +1,6 @@
 "use client"
 import Link from 'next/link'
-import React, { useRef, useContext } from 'react'
+import React, { useRef, useContext, useState } from 'react'
 import axios from 'axios'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -12,6 +12,7 @@ const LoginPage = () => {
     const emailRef = useRef(null)
     const passwordRef = useRef(null)
     const router = useRouter()
+    const [showPassword, setShowPassword] = useState(false)
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -68,7 +69,7 @@ const LoginPage = () => {
                             </label>
                             <input
                                 ref={passwordRef}
-                                type="password"
+                                type={showPassword ? 'text' : 'password'}
                                 required
                                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
                             />
@@ -83,7 +84,9 @@ const LoginPage = () => {
                                 </label>
                                 <span>Remember me</span>
                             </div>
-                            <Link href=" " className="text-center text-indigo-600 hover:text-indigo-500">Forgot password?</Link>
+                            <p onClick={() => {
+                                setShowPassword(!showPassword)
+                            }} className="text-center cursor-pointer text-indigo-600 hover:text-indigo-500">{showPassword ? "Hide" : "Show"} password</p>
                         </div>
                         <button
                             className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150"
