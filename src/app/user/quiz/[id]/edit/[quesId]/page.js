@@ -144,7 +144,7 @@ const EditQuestions = () => {
             <label htmlFor="text" className="font-medium">
               Question Text
             </label>
-            <input
+            <textarea
               type="text"
               name="text"
               value={questionData.text}

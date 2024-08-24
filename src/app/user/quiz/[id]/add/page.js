@@ -1,11 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { getDatabase, ref, set, get } from "firebase/database";
-import database from "@/firebase/config";
+import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useParams, useRouter } from "next/navigation";
-import axios from "axios";
 
 const AddQuestions = () => {
   const { id } = useParams();
@@ -19,6 +17,7 @@ const AddQuestions = () => {
     correct: "", // For storing the correct option
     timer: 10, // Default timer value
   });
+  const [loading, setLoading] = useState(false); // Loading state
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -29,7 +28,12 @@ const AddQuestions = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const sanitizePath = (path) => {
+    return path
+      .replace(/[.\#$\[\]]/g, "_");
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Check if question text, correct answer, and timer are filled
@@ -44,19 +48,22 @@ const AddQuestions = () => {
       return;
     }
 
-    // Add the question to the database
-    const postData = async () => {
-      const resp = await axios.post(`/api/questions?id=${quizId}`, questionData).then((res) => {
-        toast.success("Question added successfully");
-        router.push(`/user/quiz/${quizId}`);
-      }
-      ).catch((error) => {
-        toast.error("Error adding question");
+    const sanitizedQuestionText = sanitizePath(questionData.text);
+
+    setLoading(true); // Start loading
+
+    try {
+      await axios.post(`/api/questions?id=${quizId}`, {
+        ...questionData,
+        text: sanitizedQuestionText,
       });
-
-
+      toast.success("Question added successfully");
+      router.push(`/user/quiz/${quizId}`);
+    } catch (error) {
+      toast.error("Error adding question");
+    } finally {
+      setLoading(false); // Stop loading
     }
-    postData();
   };
 
   const handleOptionChange = (e) => {
@@ -199,8 +206,9 @@ const AddQuestions = () => {
           <button
             type="submit"
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            disabled={loading}
           >
-            Add Question
+            {loading ? "Adding Question..." : "Add Question"}
           </button>
         </form>
       </div>
