@@ -74,6 +74,9 @@ const UserQuiz = () => {
                                         <Link href={`/user/quiz/${quiz._id}/control`} className="bg-green-500 text-white px-3 py-1 rounded-full ml-2">
                                             Control
                                         </Link>
+                                        <Link href={`/leaderboard/${quiz._id}/`} className="bg-orange-500 text-white px-3 py-1 rounded-full ml-2">
+                                            Leaderboard
+                                        </Link>
                                         <button
                                             onClick={() => handleDelete(quiz._id)}
                                             className="bg-red-500 text-white px-3 py-1 rounded-full ml-2"

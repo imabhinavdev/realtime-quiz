@@ -10,13 +10,15 @@ import {
   off,
 } from "firebase/database";
 import database from "@/firebase/config";
+import { useParams } from "next/navigation";
 
 const LeaderBoardPage = () => {
   const [leaderboardData, setLeaderboardData] = useState([]);
+  const { quizId } = useParams();
 
   useEffect(() => {
     const db = database;
-    const usersRef = ref(db, "users");
+    const usersRef = ref(db, `/${quizId}/users`);
     const usersQuery = query(
       usersRef,
       orderByChild("lastAnswered"),
