@@ -67,19 +67,19 @@ const UserQuiz = () => {
                                     <Link href={`/quiz/${quiz._id}/`} className="text-sm line-clamp-1 text-gray-500">
                                         https://quiz.imabhinav.dev/quiz/{quiz._id}/
                                     </Link>
-                                    <div className="mt-4">
-                                        <Link href={`/user/quiz/${quiz._id}`} className="bg-blue-500 text-white px-3 py-1 rounded-full">
+                                    <div className="mt-4 grid  grid-cols-2 gap-4">
+                                        <Link href={`/user/quiz/${quiz._id}`} className="bg-blue-500 text-center text-white px-3 py-1 rounded-full">
                                             Edit
                                         </Link>
-                                        <Link href={`/user/quiz/${quiz._id}/control`} className="bg-green-500 text-white px-3 py-1 rounded-full ml-2">
+                                        <Link href={`/user/quiz/${quiz._id}/control`} className="bg-green-500 text-center text-white px-3 py-1 rounded-full ">
                                             Control
                                         </Link>
-                                        <Link href={`/leaderboard/${quiz._id}/`} className="bg-orange-500 text-white px-3 py-1 rounded-full ml-2">
+                                        <Link href={`/leaderboard/${quiz._id}/`} className="bg-orange-500 text-center text-white px-3 py-1 rounded-full ">
                                             Leaderboard
                                         </Link>
                                         <button
                                             onClick={() => handleDelete(quiz._id)}
-                                            className="bg-red-500 text-white px-3 py-1 rounded-full ml-2"
+                                            className="bg-red-500 text-white px-3 py-1 rounded-full "
                                         >
                                             Delete
                                         </button>

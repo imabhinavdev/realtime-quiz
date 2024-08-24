@@ -4,13 +4,14 @@ import {
   getDatabase,
   ref,
   orderByChild,
-  limitToLast,
   onValue,
   query,
   off,
 } from "firebase/database";
 import database from "@/firebase/config";
 import { useParams } from "next/navigation";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const LeaderBoardPage = () => {
   const [leaderboardData, setLeaderboardData] = useState([]);
@@ -19,37 +20,27 @@ const LeaderBoardPage = () => {
   useEffect(() => {
     const db = database;
     const usersRef = ref(db, `/${quizId}/users`);
-    const usersQuery = query(
-      usersRef,
-      orderByChild("lastAnswered"),
-    );
+    const usersQuery = query(usersRef, orderByChild("lastAnswered"));
 
     const fetchData = () => {
       onValue(usersQuery, (snapshot) => {
         const data = snapshot.val();
         if (data) {
-          // Convert object of objects to array of objects
           const dataArray = Object.keys(data).map((key) => ({
             ...data[key],
             email: key,
           }));
 
-          // Sort users based on score in descending order
           const sortedByScore = dataArray.sort((a, b) => b.score - a.score);
 
-          // Find the maximum score
-          const maxScore =
-            sortedByScore.length > 0 ? sortedByScore[0].score : 0;
+          const maxScore = sortedByScore.length > 0 ? sortedByScore[0].score : 0;
 
-          // Further sort by lastAnswered (least recently answered first) if score is the same
           const sortedData = sortedByScore.sort((a, b) => {
             if (a.score === maxScore && b.score === maxScore) {
-              // Convert lastAnswered to milliseconds for comparison
               const lastAnsweredA = new Date(a.lastAnswered).getTime();
               const lastAnsweredB = new Date(b.lastAnswered).getTime();
               return lastAnsweredA - lastAnsweredB;
             } else {
-              // Users with different scores should remain in their sorted order
               return 0;
             }
           });
@@ -66,8 +57,31 @@ const LeaderBoardPage = () => {
     };
   }, []);
 
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+
+    // Add quiz name and date
+    doc.setFontSize(20);
+    doc.text("Quiz Name: " + quizId, 20, 20);
+    doc.setFontSize(12);
+    doc.text("Date: " + new Date().toLocaleDateString(), 20, 30);
+
+    // Add table
+    const tableColumn = ["Rank", "Name", "Score"];
+    const tableRows = [];
+
+    leaderboardData.forEach((user, index) => {
+      const userData = [index + 1, user.name, user.score];
+      tableRows.push(userData);
+    });
+
+    doc.autoTable(tableColumn, tableRows, { startY: 40 });
+
+    doc.save(`leaderboard_${quizId}.pdf`);
+  };
+
   return (
-    <div className=" w-full p-6 bg-gray-100 rounded-md shadow-md">
+    <div className="w-full p-6 bg-gray-100 rounded-md shadow-md">
       <h1 className="text-3xl font-bold text-center mb-6">Leaderboard</h1>
       <ol>
         {leaderboardData.map((user, index) => (
@@ -76,11 +90,17 @@ const LeaderBoardPage = () => {
             className="flex justify-between items-center py-3 border-b text-2xl"
           >
             <span className="font-bold">{index + 1}.</span>
-            <span className="flex-grow ml-4 ">{user.name}</span>
-            <span className="font-bold ">{user.score}</span>
+            <span className="flex-grow ml-4">{user.name}</span>
+            <span className="font-bold">{user.score}</span>
           </li>
         ))}
       </ol>
+      <button
+        className="mt-6 p-2 bg-blue-500 text-white rounded"
+        onClick={downloadPDF}
+      >
+        Download PDF
+      </button>
     </div>
   );
 };
