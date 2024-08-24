@@ -228,7 +228,7 @@ const QuizApp = ({ params }) => {
           <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-4">
             <h1 className="text-2xl font-bold text-gray-900">Question:</h1>
 
-            <p className="text-xl text-gray-900">{questions.text}</p>
+            <p className="text-xl text-gray-900 whitespace-pre-wrap">{questions.text}</p>
             <div className="flex items-start flex-col">
               <p className="text-red-600 font-semibold mr-2">
                 Time Left: {timeLeft}
@@ -254,10 +254,10 @@ const QuizApp = ({ params }) => {
               {questions.optionA && (
                 <div
                   className={`flex items-center mb-4 rounded-lg p-2 ${showAnswer && questions.correct === "optionA"
-                      ? "bg-green-400"
-                      : showAnswer && selectedAnswer === "optionA"
-                        ? "bg-red-400"
-                        : ""
+                    ? "bg-green-400"
+                    : showAnswer && selectedAnswer === "optionA"
+                      ? "bg-red-400"
+                      : ""
                     }`}
                 >
                   <input
@@ -289,10 +289,10 @@ const QuizApp = ({ params }) => {
               {questions.optionB && (
                 <div
                   className={`flex items-center mb-4 rounded-lg p-2 ${showAnswer && questions.correct === "optionB"
-                      ? "bg-green-400"
-                      : showAnswer && selectedAnswer === "optionB"
-                        ? "bg-red-400"
-                        : ""
+                    ? "bg-green-400"
+                    : showAnswer && selectedAnswer === "optionB"
+                      ? "bg-red-400"
+                      : ""
                     }`}
                 >
                   <input
@@ -324,10 +324,10 @@ const QuizApp = ({ params }) => {
               {questions.optionC && (
                 <div
                   className={`flex items-center mb-4 rounded-lg p-2 ${showAnswer && questions.correct === "optionC"
-                      ? "bg-green-400"
-                      : showAnswer && selectedAnswer === "optionC"
-                        ? "bg-red-400"
-                        : ""
+                    ? "bg-green-400"
+                    : showAnswer && selectedAnswer === "optionC"
+                      ? "bg-red-400"
+                      : ""
                     }`}
                 >
                   <input
@@ -359,10 +359,10 @@ const QuizApp = ({ params }) => {
               {questions.optionD && (
                 <div
                   className={`flex items-center mb-4 rounded-lg p-2 ${showAnswer && questions.correct === "optionD"
-                      ? "bg-green-400"
-                      : showAnswer && selectedAnswer === "optionD"
-                        ? "bg-red-400"
-                        : ""
+                    ? "bg-green-400"
+                    : showAnswer && selectedAnswer === "optionD"
+                      ? "bg-red-400"
+                      : ""
                     }`}
                 >
                   <input
@@ -395,8 +395,8 @@ const QuizApp = ({ params }) => {
               type="submit"
               disabled={!btnActive || selectedAnswer.length === 0}
               className={`w-full p-2 text-white rounded-md ${!btnActive || selectedAnswer.length === 0
-                  ? "bg-green-300"
-                  : "bg-green-500"
+                ? "bg-green-300"
+                : "bg-green-500"
                 }`}
             >
               Submit Answer

@@ -91,8 +91,7 @@ const AddQuestions = () => {
             <label htmlFor="text" className="font-medium">
               Question Text
             </label>
-            <input
-              type="text"
+            <textarea
               name="text"
               value={questionData.text}
               onChange={handleChange}
