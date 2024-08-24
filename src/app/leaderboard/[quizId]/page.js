@@ -22,7 +22,6 @@ const LeaderBoardPage = () => {
     const usersQuery = query(
       usersRef,
       orderByChild("lastAnswered"),
-      limitToLast(10)
     );
 
     const fetchData = () => {
