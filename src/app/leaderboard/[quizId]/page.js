@@ -16,11 +16,26 @@ import "jspdf-autotable";
 const LeaderBoardPage = () => {
   const [leaderboardData, setLeaderboardData] = useState([]);
   const { quizId } = useParams();
+  const [quizData, setQuizData] = useState(null);
 
   useEffect(() => {
     const db = database;
     const usersRef = ref(db, `/${quizId}/users`);
     const usersQuery = query(usersRef, orderByChild("lastAnswered"));
+
+    const fetchQuizData = async () => {
+      try {
+
+        const response = await fetch(`/api/quiz?id=${quizId}`);
+        const data = await response.json();
+        setQuizData(data.quiz);
+      }
+      catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchQuizData();
 
     const fetchData = () => {
       onValue(usersQuery, (snapshot) => {
@@ -62,7 +77,7 @@ const LeaderBoardPage = () => {
 
     // Add quiz name and date
     doc.setFontSize(20);
-    doc.text("Quiz Name: " + quizId, 20, 20);
+    doc.text("Quiz Name: " + quizData.name, 20, 20);
     doc.setFontSize(12);
     doc.text("Date: " + new Date().toLocaleDateString(), 20, 30);
 
