@@ -4,19 +4,20 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import database from "@/firebase/config";
 
-const ResetScore = ({ disabled = false }) => {
+const ResetScore = ({ disabled = false, quizId }) => {
   const resetScores = () => {
     const db = database;
 
     // Fetch the list of users
-    const usersRef = ref(db, "users");
+    console.log(quizId)
+    const usersRef = ref(db, `${quizId}/users`);
     getUsers(usersRef)
       .then((users) => {
         // Update the score of each user to 0
         users.forEach((user) => {
-          const userRef = ref(db, `users/${user.id}`);
+          const userRef = ref(db, `${quizId}/users/${user.id}`);
           update(userRef, { score: 0 })
-            .then(() => {})
+            .then(() => { })
             .catch((error) => {
               console.error(
                 `Error resetting score for user: ${user.name}`,
@@ -55,9 +56,8 @@ const ResetScore = ({ disabled = false }) => {
   return (
     <button
       onClick={resetScores}
-      className={`bg-purple-500 text-white px-4 py-2 rounded-lg ${
-        disabled ? "opacity-50 cursor-not-allowed" : ""
-      }`}
+      className={`bg-purple-500 text-white px-4 py-2 rounded-lg ${disabled ? "opacity-50 cursor-not-allowed" : ""
+        }`}
       disabled={disabled}
     >
       Reset Scores
