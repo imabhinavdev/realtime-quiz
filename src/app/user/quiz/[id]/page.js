@@ -23,7 +23,6 @@ const ControlPage = () => {
       .then((snapshot) => {
         if (snapshot.exists()) {
           setQuestions(snapshot.val());
-          console.log(snapshot.val());
         } else {
           console.log("No questions available");
         }

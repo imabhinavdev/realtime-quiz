@@ -32,7 +32,24 @@ const QuizApp = ({ params }) => {
   const encodeEmail = (email) => {
     return email.replace(/\./g, "%2E");
   };
+
   useEffect(() => {
+    // Reset user score to 0 on page refresh
+    const resetUserScore = () => {
+      const db = database;
+      const encodedEmail = encodeEmail(email);
+      const userScoreRef = ref(db, `${id}/users/${encodedEmail}/score`);
+      set(userScoreRef, 0)
+        .then(() => {
+          console.log("User score reset to 0.");
+        })
+        .catch((error) => {
+          console.error("Error resetting user score:", error);
+        });
+    };
+
+    resetUserScore();
+
     // Delay updating the progress bar's width until after the component has mounted
     setTimeout(() => {
       setBarWidth(100); // Update the width to 100 after a delay
@@ -123,7 +140,6 @@ const QuizApp = ({ params }) => {
             setSelectedAnswer("");
             setBtnActive(true);
             setTimeLeft(questionData.timer || 10); // Set timer dynamically
-          } else {
           }
         })
         .catch((error) => {
@@ -139,10 +155,8 @@ const QuizApp = ({ params }) => {
           setTimeLeft((prevTime) => prevTime - 1);
         }, 1000)
       );
-    } else {
-      // If time runs out, set time left to 0 and stop the timer
-      setTimeLeft(0);
-      setBtnActive(false);
+    } else if (timeLeft === 0 && selectedAnswer) {
+      handleSubmit(); // Automatically submit the answer if the timer runs out
     }
 
     return () => clearTimeout(timer); // Clear the timer when the component unmounts
@@ -153,7 +167,7 @@ const QuizApp = ({ params }) => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e?.preventDefault(); // Prevent default only if an event is passed
     setBtnActive(false);
 
     // Check if the selected answer is correct
@@ -197,8 +211,7 @@ const QuizApp = ({ params }) => {
         const count = snapshot.val() || 0;
         const updatedCount = count + 1; // Increase count by 1
         set(optionSelectedCountRef, updatedCount) // Set the count directly in the database
-          .then(() => {
-          })
+          .then(() => { })
           .catch((error) => {
             console.error("Error updating option selected count:", error);
           });
@@ -214,194 +227,124 @@ const QuizApp = ({ params }) => {
 
   if (!quizActive) {
     return (
-      <div className="text-black text-xl">
-        <p>Please wait until the quiz start. Kindly do not refresh the page.</p>
-        <p>Your email is {email}</p>
+      <div className="text-black text-xl text-center p-8 bg-gray-100 shadow-md rounded-lg">
+        <p className="text-lg mb-2">Please wait until the quiz starts. Kindly do not refresh the page.</p>
+        <p className="text-md text-gray-700">Your email: <span className="font-bold">{email}</span></p>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="md:flex justify-center">
-        <div className="p-4 flex flex-col gap-4 shadow-2xl rounded-lg md:min-w-96">
-          <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-4">
-            <h1 className="text-2xl font-bold text-gray-900">Question:</h1>
+    <div className="bg-gradient-to-r  flex items-center justify-center">
+      <div className="p-6 bg-white shadow-lg rounded-lg w-full max-w-3xl">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <h1 className="text-3xl font-bold text-gray-800">Question:</h1>
 
-            <p className="text-xl text-gray-900 whitespace-pre-wrap">{questions.text}</p>
-            <div className="flex items-start flex-col">
-              <p className="text-red-600 font-semibold mr-2">
-                Time Left: {timeLeft}
-              </p>
+          <p className="text-lg text-gray-800 whitespace-pre-wrap">{questions.text}</p>
 
-              {Object.keys(questions).length > 0 && (
-                <progress
-                  className="w-full h-2 bg-gray-200 rounded-md overflow-hidden translate-all ease-out duration-2000"
-                  value={timeLeft}
-                  max={questions.timer || 10} // Set max value dynamically
-                >
-                  <div
-                    className="h-full text-yellow-500"
-                    style={{
-                      width: `${(timeLeft / (questions.timer || 10)) * 100}%`, // Adjust width based on timeLeft
-                    }}
-                  ></div>
-                </progress>
-              )}
-            </div>
-            <fieldset>
-              <legend className="sr-only">s</legend>
-              {questions.optionA && (
-                <div
-                  className={`flex items-center mb-4 rounded-lg p-2 ${showAnswer && questions.correct === "optionA"
-                    ? "bg-green-400"
-                    : showAnswer && selectedAnswer === "optionA"
-                      ? "bg-red-400"
-                      : ""
-                    }`}
-                >
-                  <input
-                    id="optionA"
-                    type="radio"
-                    name="answers"
-                    value="optionA"
-                    checked={selectedAnswer === "optionA"}
-                    onChange={handleAnswerChange}
-                    disabled={!btnActive}
-                    className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600"
-                  />
-                  <div className="flex w-full justify-between h-full items-center">
-                    <label
-                      htmlFor="optionA"
-                      className={`block ms-2 text-md md:text-lg font-medium text-gray-900 cursor-pointer `}
-                    >
-                      {questions.optionA}
-                    </label>
-                    {showAnswer && (
-                      <p className="bg-black text-white p-1 px-3 rounded-full">
-                        {optionASelectedCount}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
+          <div className="flex items-center flex-col">
+            <p className="text-xl font-semibold text-red-600 mb-2">Time Left: {timeLeft}</p>
 
-              {questions.optionB && (
-                <div
-                  className={`flex items-center mb-4 rounded-lg p-2 ${showAnswer && questions.correct === "optionB"
-                    ? "bg-green-400"
-                    : showAnswer && selectedAnswer === "optionB"
-                      ? "bg-red-400"
-                      : ""
-                    }`}
-                >
-                  <input
-                    id="optionB"
-                    type="radio"
-                    name="answers"
-                    value="optionB"
-                    checked={selectedAnswer === "optionB"}
-                    onChange={handleAnswerChange}
-                    disabled={!btnActive}
-                    className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600"
-                  />
-                  <div className="flex w-full justify-between h-full items-center">
-                    <label
-                      htmlFor="optionB"
-                      className={`block ms-2 text-md md:text-lg font-medium text-gray-900 cursor-pointer `}
-                    >
-                      {questions.optionB}
-                    </label>
-                    {showAnswer && (
-                      <p className="bg-black text-white p-1 px-3 rounded-full">
-                        {optionBSelectedCount}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
+            {Object.keys(questions).length > 0 && (
 
-              {questions.optionC && (
-                <div
-                  className={`flex items-center mb-4 rounded-lg p-2 ${showAnswer && questions.correct === "optionC"
-                    ? "bg-green-400"
-                    : showAnswer && selectedAnswer === "optionC"
-                      ? "bg-red-400"
-                      : ""
-                    }`}
-                >
-                  <input
-                    id="optionC"
-                    type="radio"
-                    name="answers"
-                    value="optionC"
-                    checked={selectedAnswer === "optionC"}
-                    onChange={handleAnswerChange}
-                    disabled={!btnActive}
-                    className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300"
-                  />
-                  <div className="flex w-full justify-between h-full items-center">
-                    <label
-                      htmlFor="optionC"
-                      className={`block ms-2 text-md md:text-lg font-medium text-gray-900 cursor-pointer `}
-                    >
-                      {questions.optionC}
-                    </label>
-                    {showAnswer && (
-                      <p className="bg-black text-white p-1 px-3 rounded-full">
-                        {optionCSelectedCount}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
 
-              {questions.optionD && (
-                <div
-                  className={`flex items-center mb-4 rounded-lg p-2 ${showAnswer && questions.correct === "optionD"
-                    ? "bg-green-400"
-                    : showAnswer && selectedAnswer === "optionD"
-                      ? "bg-red-400"
-                      : ""
-                    }`}
-                >
-                  <input
-                    id="optionD"
-                    type="radio"
-                    name="answers"
-                    value="optionD"
-                    checked={selectedAnswer === "optionD"}
-                    onChange={handleAnswerChange}
-                    disabled={!btnActive}
-                    className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300"
-                  />
-                  <div className="flex w-full justify-between h-full items-center">
-                    <label
-                      htmlFor="optionD"
-                      className={`block ms-2 text-md md:text-lg font-medium text-gray-900 cursor-pointer `}
-                    >
-                      {questions.optionD}
-                    </label>
-                    {showAnswer && (
-                      <p className="bg-black text-white p-1 px-3 rounded-full">
-                        {optionDSelectedCount}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-            </fieldset>
-            <button
-              type="submit"
-              disabled={!btnActive || selectedAnswer.length === 0}
-              className={`w-full p-2 text-white rounded-md ${!btnActive || selectedAnswer.length === 0
-                ? "bg-green-300"
-                : "bg-green-500"
-                }`}
-            >
-              Submit Answer
-            </button>
-          </form>
+              <progress
+                className="w-full h-2 bg-gray-200 rounded-md overflow-hidden translate-all ease-out duration-2000"
+                value={timeLeft}
+                max={questions.timer || 10} // Set max value dynamically
+              ></progress>
+            )}
+          </div>
+
+          <fieldset className="space-y-4">
+            <legend className="sr-only">Choose an answer</legend>
+            {questions.optionA && (
+              <div className={`flex items-center p-4 cursor-pointer rounded-lg border-2 ${showAnswer && questions.correct === "optionA" ? "bg-green-100 border-green-500" : showAnswer && selectedAnswer === "optionA" ? "bg-red-100 border-red-500" : "border-gray-300"}`}>
+                <input
+                  id="optionA"
+                  type="radio"
+                  name="answers"
+                  value="optionA"
+                  checked={selectedAnswer === "optionA"}
+                  onChange={handleAnswerChange}
+                  disabled={!btnActive}
+                  className="w-5 h-5 border-gray-300 focus:ring-2 focus:ring-blue-500"
+                />
+                <label htmlFor="optionA" className="ml-3 cursor-pointer  text-lg font-medium text-gray-900">{questions.optionA}</label>
+                {showAnswer && (
+                  <span className="ml-3 bg-black text-white px-2 py-1 rounded-full">{optionASelectedCount}</span>
+                )}
+              </div>
+            )}
+
+            {questions.optionB && (
+              <div className={`flex items-center cursor-pointer p-4 rounded-lg border-2 ${showAnswer && questions.correct === "optionB" ? "bg-green-100 border-green-500" : showAnswer && selectedAnswer === "optionB" ? "bg-red-100 border-red-500" : "border-gray-300"}`}>
+                <input
+                  id="optionB"
+                  type="radio"
+                  name="answers"
+                  value="optionB"
+                  checked={selectedAnswer === "optionB"}
+                  onChange={handleAnswerChange}
+                  disabled={!btnActive}
+                  className="w-5 h-5 border-gray-300 focus:ring-2 focus:ring-blue-500"
+                />
+                <label htmlFor="optionB" className="ml-3 cursor-pointer text-lg font-medium text-gray-900">{questions.optionB}</label>
+                {showAnswer && (
+                  <span className="ml-3 bg-black text-white px-2 py-1 rounded-full">{optionBSelectedCount}</span>
+                )}
+              </div>
+            )}
+
+            {questions.optionC && (
+              <div className={`flex items-center p-4 cursor-pointer rounded-lg border-2 ${showAnswer && questions.correct === "optionC" ? "bg-green-100 border-green-500" : showAnswer && selectedAnswer === "optionC" ? "bg-red-100 border-red-500" : "border-gray-300"}`}>
+                <input
+                  id="optionC"
+                  type="radio"
+                  name="answers"
+                  value="optionC"
+                  checked={selectedAnswer === "optionC"}
+                  onChange={handleAnswerChange}
+                  disabled={!btnActive}
+                  className="w-5 h-5 border-gray-300 focus:ring-2 focus:ring-blue-500"
+                />
+                <label htmlFor="optionC" className="ml-3 cursor-pointer text-lg font-medium text-gray-900">{questions.optionC}</label>
+                {showAnswer && (
+                  <span className="ml-3 bg-black text-white px-2 py-1 rounded-full">{optionCSelectedCount}</span>
+                )}
+              </div>
+            )}
+
+            {questions.optionD && (
+              <div className={`flex items-center p-4  cursor-pointer rounded-lg border-2 ${showAnswer && questions.correct === "optionD" ? "bg-green-100 border-green-500" : showAnswer && selectedAnswer === "optionD" ? "bg-red-100 border-red-500" : "border-gray-300"}`}>
+                <input
+                  id="optionD"
+                  type="radio"
+                  name="answers"
+                  value="optionD"
+                  checked={selectedAnswer === "optionD"}
+                  onChange={handleAnswerChange}
+                  disabled={!btnActive}
+                  className="w-5 h-5 border-gray-300 focus:ring-2 focus:ring-blue-500"
+                />
+                <label htmlFor="optionD" className="ml-3 text-lg cursor-pointer font-medium text-gray-900">{questions.optionD}</label>
+                {showAnswer && (
+                  <span className="ml-3 bg-black text-white px-2 py-1 rounded-full">{optionDSelectedCount}</span>
+                )}
+              </div>
+            )}
+          </fieldset>
+
+          <button
+            type="submit"
+            disabled={!btnActive || !selectedAnswer}
+            className={`w-full p-3 text-lg font-medium text-white rounded-md ${!btnActive || !selectedAnswer ? "bg-green-300 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"} transition duration-300`}
+          >
+            Submit Answer
+          </button>
+        </form>
+        <div className="mt-6 text-gray-800 text-lg text-center">
+          <p>Your email: <span className="font-semibold">{email}</span></p>
         </div>
       </div>
     </div>
