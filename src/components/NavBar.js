@@ -44,7 +44,6 @@ const NavBar = () => {
 
   return (
     <>
-      <ToastContainer />
       <nav
         className={` md:text-sm bg-black ${state ? "shadow-lg rounded-xl border mx-2 mt-2 md:shadow-none md:border-none md:mx-2 md:mt-0"
           : ""

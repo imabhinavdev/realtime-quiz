@@ -133,7 +133,6 @@ const EditQuestions = () => {
 
   return (
     <>
-      <ToastContainer />
       <div className="flex flex-col items-center bg-white w-full rounded-lg p-4">
         <h1 className="text-2xl font-bold mb-4">Edit Question</h1>
         <form

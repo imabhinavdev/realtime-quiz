@@ -183,7 +183,6 @@ const AdminQuizControlPage = () => {
 
   return (
     <>
-      <ToastContainer />
       <div className="flex flex-col gap-6 w-full">
         <h1 className="text-2xl font-bold">Control Quiz</h1>
         <p>

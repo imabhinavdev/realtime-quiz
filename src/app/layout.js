@@ -3,6 +3,7 @@ import { Poppins } from 'next/font/google';
 import './globals.css';
 import NavBar from '@/components/NavBar';
 import { UserProvider } from '@/context/UserContext';
+import { ToastContainer } from 'react-toastify';
 
 const pop = Poppins({
   subsets: ['latin'],
@@ -24,6 +25,7 @@ export default function RootLayout({ children }) {
             {children}
           </div>
         </UserProvider>
+        <ToastContainer />
       </body>
     </html>
   );

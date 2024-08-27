@@ -28,10 +28,10 @@ const AddQuestions = () => {
     });
   };
 
-  const sanitizePath = (path) => {
-    return path
-      .replace(/[.\#$\[\]]/g, "_");
-  };
+  // const sanitizePath = (path) => {
+  //   return path
+  //     .replace(/[.\#$\[\]]/g, "_");
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,14 +48,13 @@ const AddQuestions = () => {
       return;
     }
 
-    const sanitizedQuestionText = sanitizePath(questionData.text);
+    // const sanitizedQuestionText = sanitizePath(questionData.text);
 
     setLoading(true); // Start loading
 
     try {
       await axios.post(`/api/questions?id=${quizId}`, {
-        ...questionData,
-        text: sanitizedQuestionText,
+        ...questionData
       });
       toast.success("Question added successfully");
       router.push(`/user/quiz/${quizId}`);
@@ -87,7 +86,6 @@ const AddQuestions = () => {
 
   return (
     <>
-      <ToastContainer />
       <div className="flex flex-col items-center bg-white w-full rounded-lg p-4">
         <h1 className="text-2xl font-bold mb-4">Add Question</h1>
         <form

@@ -66,8 +66,8 @@ export async function POST(req) {
     };
 
     // Replace spaces and question marks with underscores
-    const replacedText = text.replace(/[\s?]/g, "_");
-    const questionId = `${formattedQuestionNo}_${replacedText}`;
+    const replacedText = text.replace(/[.\#$\[\]]/g, "_");
+    const questionId = `${formattedQuestionNo}`;
 
     // Update question number in Firebase
     await set(questionNoRef, currentQuestionNo + 1);

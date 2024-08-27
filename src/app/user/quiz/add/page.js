@@ -40,7 +40,6 @@ const AddQuiz = () => {
 
     return (
         <>
-            <ToastContainer />
             <div className='w-full '>
                 <h1 className='text-2xl font-semibold'>Create New Quiz</h1>
                 <form className='mt-4' onSubmit={handleSubmit}>

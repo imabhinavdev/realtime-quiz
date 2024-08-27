@@ -43,7 +43,6 @@ const QuizRegister = () => {
 
   return (
     <main className="w-full flex flex-col items-center justify-center px-4">
-      <ToastContainer />
       <div className="max-w-sm w-full text-gray-600">
         <div className="text-center">
           <div className="mt-5 space-y-2">

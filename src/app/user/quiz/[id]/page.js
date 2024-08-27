@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { getDatabase, ref, get, remove } from "firebase/database";
+import { getDatabase, ref, get, remove,set } from "firebase/database";
 import database from "@/firebase/config";
 import Link from "next/link";
 import ConfirmationModal from "@/components/ConfirmationModal";
@@ -23,6 +23,7 @@ const ControlPage = () => {
       .then((snapshot) => {
         if (snapshot.exists()) {
           setQuestions(snapshot.val());
+          console.log(snapshot.val());
         } else {
           console.log("No questions available");
         }
@@ -36,10 +37,8 @@ const ControlPage = () => {
     const db = database;
     const questionRef = ref(db, `${quizId}/questions/${questionId}`);
 
-    // Remove the question data from the database
-    remove(questionRef)
+    set(questionRef, null)
       .then(() => {
-        // Remove the question from the local state
         const updatedQuestions = { ...questions };
         delete updatedQuestions[questionId];
         setQuestions(updatedQuestions);
@@ -48,6 +47,7 @@ const ControlPage = () => {
         console.error("Error deleting question:", error);
       });
   };
+
 
   const handleOpenConfirmationModal = (questionId) => {
     setSelectedQuestion(questionId);
