@@ -9,7 +9,6 @@ const ResetScore = ({ disabled = false, quizId }) => {
     const db = database;
 
     // Fetch the list of users
-    console.log(quizId)
     const usersRef = ref(db, `${quizId}/users`);
     getUsers(usersRef)
       .then((users) => {
